@@ -1,0 +1,14 @@
+<table class="table">
+    <thead>
+    <tr>
+      <th>Description</th>
+      <th>Link</th>
+    </tr>
+    {% for result in results %}
+    <tr>
+        <th>{{result.description}}</th>
+        <th>{{result.source}}</th>
+    </tr>
+    {% endfor %}
+    </thead>
+</table>

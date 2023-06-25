@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "recipe-book"
+version = "0.1.0"
+description = "A receipe book using htmlx"
+authors = ["Karik Isichei <karik.isichei@gmail.com>"]
+readme = "README.md"
+packages = [{include = "recipe_book"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.98.0"
+uvicorn = "^0.22.0"
+Jinja2 = "^3.1.2"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.275"
+just = "^0.8.161"
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -31,6 +31,8 @@ def _search_recipes(text:str) -> list[dict]:
             )
         ]
         return matched
+    
+
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     context = {

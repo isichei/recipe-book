@@ -1,0 +1,28 @@
+.thumbnail {
+    width: 250px;
+    height: 250px;
+}
+  
+.results-wrapper {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  grid-gap: 10px;
+  background-color: #fff;
+  color: #444;
+}
+
+.result-box {
+  background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  font-size: 150%;
+}
+
+.result-heading {
+  font-size: 1em;
+}
+
+.result-description {
+  font-size: 0.8em;
+}

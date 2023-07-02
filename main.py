@@ -1,20 +1,25 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/thumbnails", StaticFiles(directory="thumbnails"), name="thumbnails")
+
 templates = Jinja2Templates(directory="templates")
 
 RECIPES_DB = [
     {
-        "name": "chicken-dhansak-recipe",
+        "uid": "chicken-dhansak-recipe",
+        "title": "Chicken Dhansak",
         "description": "A chicken dhansak recipe from BBC good foods",
-        "source": "recipes/chicken-dhansak-recipe.pdf",
     },
     {
-        "name": "christmas-roast-potatoes",
-        "description": "A jamie oliver roast potato recipe usually used at xmas",
-        "source": "recipes/jamie-oliver-roast-potatoes.pdf",
+        "uid": "christmas-roast-potatoes",
+        "title": "Jamie Oliver Roast Potatoes",
+        "description": "A jamie oliver roast potato recipe usually used at Christmas",
     },
 ]
 
@@ -34,7 +39,7 @@ def _search_recipes(text:str) -> list[dict]:
     
 
 @app.get("/", response_class=HTMLResponse)
-def home(request: Request):
+async def home(request: Request):
     context = {
         "request": request,
         "results": _search_recipes(""),
@@ -43,9 +48,14 @@ def home(request: Request):
 
 
 @app.get("/search-recipes", response_class=HTMLResponse)
-def search_recipes(request: Request, text: str):
+async def search_recipes(request: Request, text: str):
     context = {
         "request": request,
         "results": _search_recipes(text),
     }
     return templates.TemplateResponse("search_results.html", context=context)
+
+
+# @app.get("/thumbnail/{name}", response_class=FileResponse)
+# async def thumbnail(name:str):
+#     return FileResponse(f"thumbnails/{name}")

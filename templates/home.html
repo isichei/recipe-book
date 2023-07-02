@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Search</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="static/styles.css" />
   </head>
   <body>
   <section class="section">
@@ -21,7 +22,7 @@
                 </span>
               </p>
             </div>
-            <div id="search-results">
+            <div id="search-results" class="results-wrapper" style="padding: 20px;">
                 {% include 'search_results.html' %}
             </div>
           </nav>

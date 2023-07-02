@@ -1,14 +1,13 @@
-<table class="table">
-    <thead>
-    <tr>
-      <th>Description</th>
-      <th>Link</th>
-    </tr>
-    {% for result in results %}
-    <tr>
-        <th>{{result.description}}</th>
-        <th>{{result.source}}</th>
-    </tr>
-    {% endfor %}
-    </thead>
-</table>
+{% for result in results %}
+<div class="result-box">
+  <div>
+    <h3><b>{{result.title}}</b></h3>
+  </div>
+  <div>
+    <img src="thumbnails/{{result.uid}}.jpg" alt="Stock image" class="thumbnail" />
+  </div>
+  <div class="result-description">
+      <p>{{result.description}}</p>
+  </div>
+</div>
+{% endfor %}

@@ -1,13 +1,10 @@
 package api
 
 import (
-	"bytes"
 	"context"
-	"html/template"
-	"strings"
+	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/isichei/recipe-book/types"
 )
 
 type SimpleResponse struct {
@@ -43,55 +40,49 @@ func TestRequestHandler(ctx context.Context, request events.APIGatewayProxyReque
 // Real handler for recipe App
 func RecipeRequestHandler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	var htmlBody bytes.Buffer
-	status := 500
+	var requester Requester
 
 	if request.HTTPMethod == "GET" {
 		switch request.Path {
 		case "/":
-			tmpl := template.Must(template.ParseFiles("templates/home.html", "templates/search_results.html"))
-			tmpl.Execute(&htmlBody, searchRecipes(""))
-			status = 200
+			requester = NewHtmlRequester(true, "")
 		case "/search-recipes":
-
-			tmpl := template.Must(template.ParseFiles("templates/search_results.html"))
-			tmpl.Execute(&htmlBody, searchRecipes(request.QueryStringParameters["text"]))
-			status = 200
+			requester = NewHtmlRequester(false, request.QueryStringParameters["text"])
+		case "/static":
+			requester = TextRequester{}
+		case "/thumbnails":
+			requester = ImageRequester{}
 		default:
-			htmlBody.WriteString("Unknown path: " + request.Path)
-			status = 404
+			return events.APIGatewayProxyResponse{
+				Body:       fmt.Sprintf("Unknown Path: %s", request.Path),
+				StatusCode: 404,
+				Headers:    request.Headers,
+			}, nil
 		}
-	}
-
-	return events.APIGatewayProxyResponse{Body: htmlBody.String(), StatusCode: status}, nil
-}
-
-// Todo move stuff around once lambdas are working as this duplicates storage package
-func searchRecipes(text string) []types.RecipeMetadata {
-
-	data := []types.RecipeMetadata{
-		{
-			Uid:         "chicken-dhansak-recipe",
-			Title:       "Chicken Dhansak",
-			Description: "A chicken dhansak recipe from BBC good foods",
-		},
-		{
-			Uid:         "christmas-roast-potatoes",
-			Title:       "Jamie Oliver Roast Potatoes",
-			Description: "A jamie oliver roast potato recipe usually used at Christmas",
-		},
-	}
-
-	if text == "" {
-		return data
 	} else {
-		var filtered []types.RecipeMetadata
-
-		for _, recipe := range data {
-			if strings.Contains(strings.ToLower(recipe.Description), strings.ToLower(text)) {
-				filtered = append(filtered, recipe)
-			}
-		}
-		return filtered
+		return events.APIGatewayProxyResponse{
+			Body:       "Only expect GET requests",
+			StatusCode: 405,
+			Headers:    request.Headers,
+		}, nil
 	}
+
+	body, e := requester.RetrieveData()
+	if e != nil {
+		return events.APIGatewayProxyResponse{
+			Body:       e.Error(),
+			StatusCode: 405,
+			Headers:    request.Headers,
+		}, nil
+	}
+	headers := map[string]string{"Content-Type": requester.ContentType()}
+	if requester.ContentType() == "image/jpeg" {
+		headers["Content-Length"] = fmt.Sprintf("%d", len(body))
+	}
+
+	return events.APIGatewayProxyResponse{
+		Body:       string(body),
+		StatusCode: 200,
+		Headers:    headers,
+	}, nil
 }

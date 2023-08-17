@@ -1,15 +1,17 @@
 package main
 
 import (
-	"flag"
-	"log"
+	"embed"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/isichei/recipe-book/api"
-	"github.com/isichei/recipe-book/storage"
 )
 
+//go:embed static/* templates/* thumbnails/*
+var staticResources embed.FS
+
 func main() {
-	listenPort := flag.String("listen-port", ":8000", "What port to serve the app on")
-	server := api.NewServer(*listenPort, storage.NewFakeStorage())
-	log.Fatal(server.Start())
+
+	api.StaticResources = staticResources
+	lambda.Start(api.RecipeRequestHandler)
 }

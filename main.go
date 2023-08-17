@@ -7,7 +7,7 @@ import (
 	"github.com/isichei/recipe-book/api"
 )
 
-//go:embed static/* templates/*
+//go:embed static/* templates/* thumbnails/*
 var staticResources embed.FS
 
 func main() {

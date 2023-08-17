@@ -52,14 +52,16 @@ func (h HtmlRequester) ContentType() string {
 	return "text/html"
 }
 
-type ImageRequester struct{}
+type ImageRequester struct {
+	imagePath string
+}
 
-// func NewImageRequester(imageName string) ImageRequester {
-// 	return ImageRequester{imageName}
-// }
+func NewImageRequester(imagePath string) ImageRequester {
+	return ImageRequester{imagePath}
+}
 
 func (ir ImageRequester) RetrieveData() ([]byte, error) {
-	return fs.ReadFile(StaticResources, "thumbnails/chicken-dhansak-recipe.jpg")
+	return fs.ReadFile(StaticResources, ir.imagePath)
 }
 
 func (ir ImageRequester) ContentType() string {

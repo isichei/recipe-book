@@ -2,7 +2,10 @@ package api
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+	"log"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -42,26 +45,34 @@ func RecipeRequestHandler(ctx context.Context, request events.APIGatewayProxyReq
 
 	var requester Requester
 
+	log.Printf("Path: %s", request.Path)
+	log.Printf("Method: %s", request.HTTPMethod)
+
 	if request.HTTPMethod == "GET" {
-		switch request.Path {
-		case "/":
+		switch request_path := request.Path; {
+		case request_path == "/":
 			requester = NewHtmlRequester(true, "")
-		case "/search-recipes":
+		case strings.HasPrefix(request_path, "/search-recipes"):
 			requester = NewHtmlRequester(false, request.QueryStringParameters["text"])
-		case "/static":
+		case strings.HasPrefix(request_path, "/static"):
 			requester = TextRequester{}
-		case "/thumbnails":
-			requester = ImageRequester{}
+		case strings.HasPrefix(request_path, "/thumbnails"):
+			image_name, _ := strings.CutPrefix(request_path, "/")
+			requester = NewImageRequester(image_name)
 		default:
+			err_body := fmt.Sprintf("Unknown Path: %s", request.Path)
+			log.Print(err_body)
 			return events.APIGatewayProxyResponse{
-				Body:       fmt.Sprintf("Unknown Path: %s", request.Path),
+				Body:       err_body,
 				StatusCode: 404,
 				Headers:    request.Headers,
 			}, nil
 		}
 	} else {
+		err_body := "Only expect GET requests"
+		log.Print(err_body)
 		return events.APIGatewayProxyResponse{
-			Body:       "Only expect GET requests",
+			Body:       err_body,
 			StatusCode: 405,
 			Headers:    request.Headers,
 		}, nil
@@ -69,8 +80,10 @@ func RecipeRequestHandler(ctx context.Context, request events.APIGatewayProxyReq
 
 	body, e := requester.RetrieveData()
 	if e != nil {
+		body_err := e.Error()
+		log.Print(body_err)
 		return events.APIGatewayProxyResponse{
-			Body:       e.Error(),
+			Body:       body_err,
 			StatusCode: 405,
 			Headers:    request.Headers,
 		}, nil
@@ -78,11 +91,18 @@ func RecipeRequestHandler(ctx context.Context, request events.APIGatewayProxyReq
 	headers := map[string]string{"Content-Type": requester.ContentType()}
 	if requester.ContentType() == "image/jpeg" {
 		headers["Content-Length"] = fmt.Sprintf("%d", len(body))
-	}
+		return events.APIGatewayProxyResponse{
+			Body:            base64.StdEncoding.EncodeToString(body),
+			StatusCode:      200,
+			Headers:         headers,
+			IsBase64Encoded: true,
+		}, nil
 
-	return events.APIGatewayProxyResponse{
-		Body:       string(body),
-		StatusCode: 200,
-		Headers:    headers,
-	}, nil
+	} else {
+		return events.APIGatewayProxyResponse{
+			Body:       string(body),
+			StatusCode: 200,
+			Headers:    headers,
+		}, nil
+	}
 }

@@ -51,6 +51,9 @@ resource "aws_lambda_function" "recipe_app_lambda" {
 resource "aws_api_gateway_rest_api" "app_rest_api" {
   name        = "recipe-api"
   description = "API Gateway for the recipe API"
+  binary_media_types = [
+       "*/*"
+  ]
 }
 
 # Allow the API GW to invoke our lambda

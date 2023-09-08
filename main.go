@@ -13,5 +13,5 @@ var staticResources embed.FS
 func main() {
 
 	api.StaticResources = staticResources
-	lambda.Start(api.RecipeRequestHandler)
+	lambda.Start(api.RequestHandler)
 }

@@ -2,11 +2,17 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"embed"
+	"encoding/base64"
+	"errors"
+	"fmt"
 	"html/template"
 	"io/fs"
+	"log"
 	"strings"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/isichei/recipe-book/types"
 )
 
@@ -15,67 +21,104 @@ import (
 var StaticResources embed.FS
 
 type Requester interface {
-	RetrieveData() ([]byte, error)
-	ContentType() string
+	Do(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
 }
 
-type HtmlRequester struct {
-	tmpl       *template.Template
-	searchText string
-}
+func RequesterFactory(request events.APIGatewayProxyRequest) (Requester, error) {
 
-func NewHtmlRequester(is_root bool, text string) HtmlRequester {
-	var h HtmlRequester
+	log.Printf("Path: %s", request.Path)
+	log.Printf("Method: %s", request.HTTPMethod)
 
-	if is_root {
-		h = HtmlRequester{
-			template.Must(template.ParseFS(StaticResources, "templates/home.html", "templates/search_results.html")),
-			"",
-		}
-	} else {
-		h = HtmlRequester{
-			template.Must(template.ParseFS(StaticResources, "templates/search_results.html")),
-			text,
-		}
+	if request.HTTPMethod != "GET" {
+		return nil, errors.New(fmt.Sprintf("API only accepts GET requests but got a %s request", request.HTTPMethod))
 	}
-	return h
+	var requester Requester
+	switch request_path := request.Path; {
+	case request_path == "/":
+		requester = homeRequester{}
+	case strings.HasPrefix(request_path, "/search-recipes"):
+		requester = searchRecipesRequester{}
+	case strings.HasPrefix(request_path, "/static"):
+		requester = staticRequester{}
+	case strings.HasPrefix(request_path, "/thumbnails"):
+		requester = imageRequester{}
+	default:
+		return nullRequester{}, errors.New(fmt.Sprintf("Recieved unexpected Path %s", request_path))
+	}
+	return requester, nil
 }
 
-func (h HtmlRequester) RetrieveData() ([]byte, error) {
+type nullRequester struct{}
+
+func (nullRequester) Do(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return events.APIGatewayProxyResponse{}, nil
+}
+
+type homeRequester struct{}
+
+func (homeRequester) Do(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	h := template.Must(template.ParseFS(StaticResources, "templates/home.html", "templates/search_results.html"))
+	return htmlTemplateToResponse(h, searchRecipes(""))
+}
+
+type searchRecipesRequester struct{}
+
+func (searchRecipesRequester) Do(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	tmpl := template.Must(template.ParseFS(StaticResources, "templates/search_results.html"))
+	return htmlTemplateToResponse(tmpl, searchRecipes(request.QueryStringParameters["text"]))
+}
+
+type staticRequester struct{}
+
+func (staticRequester) Do(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	b, err := fs.ReadFile(StaticResources, "static/styles.css")
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+	headers := map[string]string{"Content-Type": "text/css"}
+	return events.APIGatewayProxyResponse{
+		Body:       string(b),
+		StatusCode: 200,
+		Headers:    headers,
+	}, nil
+}
+
+type imageRequester struct{}
+
+func (imageRequester) Do(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	image_name, _ := strings.CutPrefix(request.Path, "/")
+	b, err := fs.ReadFile(StaticResources, image_name)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, err
+	}
+	return imageToResponse(b), nil
+}
+
+func htmlTemplateToResponse(tmpl *template.Template, data any) (events.APIGatewayProxyResponse, error) {
 	var html bytes.Buffer
 
-	e := h.tmpl.Execute(&html, searchRecipes(h.searchText))
-	return html.Bytes(), e
+	e := tmpl.Execute(&html, data)
+
+	if e != nil {
+		return events.APIGatewayProxyResponse{}, e
+	}
+	headers := map[string]string{"Content-Type": "text/html"}
+	return events.APIGatewayProxyResponse{
+		Body:       html.String(),
+		StatusCode: 200,
+		Headers:    headers,
+	}, nil
 }
 
-func (h HtmlRequester) ContentType() string {
-	return "text/html"
-}
-
-type ImageRequester struct {
-	imagePath string
-}
-
-func NewImageRequester(imagePath string) ImageRequester {
-	return ImageRequester{imagePath}
-}
-
-func (ir ImageRequester) RetrieveData() ([]byte, error) {
-	return fs.ReadFile(StaticResources, ir.imagePath)
-}
-
-func (ir ImageRequester) ContentType() string {
-	return "image/jpeg"
-}
-
-type TextRequester struct{}
-
-func (tr TextRequester) RetrieveData() ([]byte, error) {
-	return fs.ReadFile(StaticResources, "static/styles.css")
-}
-
-func (tr TextRequester) ContentType() string {
-	return "text/css"
+func imageToResponse(body []byte) events.APIGatewayProxyResponse {
+	headers := map[string]string{"Content-Type": "image/jpeg", "Content-Length": fmt.Sprintf("%d", len(body))}
+	return events.APIGatewayProxyResponse{
+		Body:            base64.StdEncoding.EncodeToString(body),
+		StatusCode:      200,
+		Headers:         headers,
+		IsBase64Encoded: true,
+	}
 }
 
 // Todo move stuff around once lambdas are working as this duplicates storage package

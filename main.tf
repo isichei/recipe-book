@@ -40,7 +40,7 @@ resource "aws_lambda_function" "recipe_app_lambda" {
   filename         = data.archive_file.recipe_app_zip.output_path
   role             = aws_iam_role.lambda_role.arn
   handler          = "bootstrap"
-  runtime          = "go1.x"
+  runtime          = "provided.al2"
   timeout          = 10
   source_code_hash = filebase64sha256(data.archive_file.recipe_app_zip.output_path)
 }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Search</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" type="text/css" href="dev/static/styles.css" />
+    <link rel="stylesheet" type="text/css" href="static/styles.css" />
   </head>
   <body>
   <section class="section">
@@ -16,14 +16,14 @@
             </p>
             <div class="panel-block">
               <p class="control has-icons-left">
-                <input class="input" type="text" placeholder="Search" name="text" hx-trigger="keyup changed delay:500ms" hx-get="/dev/search-recipes" hx-target="#search-results">
+                <input class="input" type="text" placeholder="Search" name="text" hx-trigger="keyup changed delay:500ms" hx-get="/search-recipes" hx-target="#search-results">
                 <span class="icon is-left">
                   <i class="fas fa-search" aria-hidden="true"></i>
                 </span>
               </p>
             </div>
             <div id="search-results" class="results-wrapper" style="padding: 20px;">
-              {{template "search_results.html" .}}
+              {{template "search_results.html" .SearchResults}}
             </div>
           </nav>
     </div>

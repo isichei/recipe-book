@@ -2,4 +2,4 @@ module github.com/isichei/recipe-book
 
 go 1.20
 
-require github.com/aws/aws-lambda-go v1.41.0 // indirect
+require github.com/aws/aws-lambda-go v1.41.0

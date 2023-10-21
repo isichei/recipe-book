@@ -6,6 +6,44 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Println(r.URL.String())
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	tmpl := template.Must(template.ParseFiles("templates/home.html", "templates/search_results.html"))
+
+	params := rootData{SearchResults: searchRecipes("")}
+
+	tmpl.Execute(w, params)
+}
+
+	// handler for the search recipes
+	searchRecipesHandler := func(w http.ResponseWriter, r *http.Request) {
+
+		log.Println(r.URL.String())
+
+		if r.Method != http.MethodGet {
+			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Parse the form data to retrieve the parameter value
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Error parsing form data", http.StatusInternalServerError)
+			return
+		}
+
+		recipeMetadata := searchRecipes(r.Form.Get("text"))
+
+		tmpl := template.Must(template.ParseFiles("templates/search_results.html"))
+
+		tmpl.Execute(w, recipeMetadata)
+	}
 func errorResponse(status int, message string) events.APIGatewayProxyResponse {
 	return events.APIGatewayProxyResponse{
 		Body:       message,

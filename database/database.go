@@ -1,35 +1,20 @@
 package database
 
-import "strings"
-
-type RecipeMetadata struct {
-	Uid         string
-	Title       string
-	Description string
-}
+import (
+	"github.com/isichei/recipe-book/types"
+	"strings"
+)
 
 type RecipeDatabase interface {
-	SearchRecipes(string) []RecipeMetadata
+	SearchRecipes(string) []types.RecipeMetadata
 }
 
-type TestDatabase struct{}
-
-func filterReceipeMetadata(recipes []RecipeMetadata, text string) []RecipeMetadata {
-	var filtered []RecipeMetadata
-
-	for _, recipe := range recipes {
-		if strings.Contains(strings.ToLower(recipe.Description), strings.ToLower(text)) {
-			filtered = append(filtered, recipe)
-		}
-	}
-
-	return filtered
+type TestDatabase struct {
+	data []types.RecipeMetadata
 }
 
-// Rubbish search to fill in for a proper search query later
-func (db *TestDatabase) SearchRecipes(text string) []RecipeMetadata {
-
-	data := []RecipeMetadata{
+func NewTestDatabase() TestDatabase {
+	data := []types.RecipeMetadata{
 		{
 			Uid:         "chicken-dhansak-recipe",
 			Title:       "Chicken Dhansak",
@@ -41,13 +26,29 @@ func (db *TestDatabase) SearchRecipes(text string) []RecipeMetadata {
 			Description: "A jamie oliver roast potato recipe usually used at Christmas",
 		},
 	}
+	return TestDatabase{data}
+}
 
+func filterReceipeMetadata(recipes []types.RecipeMetadata, text string) []types.RecipeMetadata {
+	var filtered []types.RecipeMetadata
+
+	for _, recipe := range recipes {
+		if strings.Contains(strings.ToLower(recipe.Description), strings.ToLower(text)) {
+			filtered = append(filtered, recipe)
+		}
+	}
+
+	return filtered
+}
+
+// Rubbish search to fill in for a proper search query later
+func (db TestDatabase) SearchRecipes(text string) []types.RecipeMetadata {
 	if text == "" {
-		return data
+		return db.data
 	} else {
-		var filtered []RecipeMetadata
+		var filtered []types.RecipeMetadata
 
-		for _, recipe := range data {
+		for _, recipe := range db.data {
 			if strings.Contains(strings.ToLower(recipe.Description), strings.ToLower(text)) {
 				filtered = append(filtered, recipe)
 			}

@@ -2,9 +2,8 @@ package main
 
 import (
 	"flag"
-	"log"
-
 	"github.com/isichei/recipe-book/api"
+	"log"
 )
 
 func main() {

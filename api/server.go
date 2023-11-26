@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/isichei/recipe-book/database"
-	"html/template"
+	"github.com/isichei/recipe-book/views"
 	"log"
 	"net/http"
 )
@@ -15,14 +15,13 @@ type Server struct {
 }
 
 func NewServer(listenerAddr string) *Server {
-
-	s := Server{listenerAddr, &database.TestDatabase{}}
+	db := database.NewTestDatabase()
+	s := Server{listenerAddr, &db}
 	return &s
 }
 
 func (s *Server) Start() error {
 	log.Println("Starting Recipe App...")
-
 	// routes for server
 	http.HandleFunc("/", s.getOnly(s.handlerRoot()))
 	http.HandleFunc("/search-recipes", s.getOnly(s.handleSearchRecipes()))
@@ -53,20 +52,15 @@ func (s *Server) getOnly(h http.HandlerFunc) http.HandlerFunc {
 // handler for home page
 func (s *Server) handlerRoot() http.HandlerFunc {
 
-	tmpl := template.Must(template.ParseFiles("templates/home.html", "templates/search_results.html"))
-	params := s.db.SearchRecipes("")
-
+	srv := views.SearchResults(s.db.SearchRecipes(""))
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.String())
-		tmpl.Execute(w, params)
+		views.Home(srv).Render(r.Context(), w)
 	}
-
 }
 
 // handler for the search recipe
 func (s *Server) handleSearchRecipes() http.HandlerFunc {
-
-	tmpl := template.Must(template.ParseFiles("templates/search_results.html"))
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.String())
@@ -78,6 +72,6 @@ func (s *Server) handleSearchRecipes() http.HandlerFunc {
 		}
 
 		recipeMetadata := s.db.SearchRecipes(r.Form.Get("text"))
-		tmpl.Execute(w, recipeMetadata)
+		views.SearchResults(recipeMetadata).Render(r.Context(), w)
 	}
 }

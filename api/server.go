@@ -21,20 +21,21 @@ func NewServer(listenerAddr string) *Server {
 }
 
 func (s *Server) Start() error {
-	log.Println("Starting Recipe App...")
+	log.Printf("Starting Recipe App on %s...\n", s.listenerAddr)
 	// routes for server
-	http.HandleFunc("/", s.getOnly(s.handlerRoot()))
-	http.HandleFunc("/search-recipes", s.getOnly(s.handleSearchRecipes()))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", s.getOnly(s.handlerRoot()))
+	mux.HandleFunc("/search-recipes", s.getOnly(s.handleSearchRecipes()))
 
 	// serve static folder
 	static_fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", static_fs))
+	mux.Handle("/static/", http.StripPrefix("/static/", static_fs))
 
 	// serve thumbnails folder
 	thumbnails_fs := http.FileServer(http.Dir("./thumbnails"))
-	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails/", thumbnails_fs))
+	mux.Handle("/thumbnails/", http.StripPrefix("/thumbnails/", thumbnails_fs))
 
-	return http.ListenAndServe(s.listenerAddr, nil)
+	return http.ListenAndServe(s.listenerAddr, mux)
 }
 
 // middle where to check if is a GetRequest

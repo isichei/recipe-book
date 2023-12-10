@@ -11,9 +11,9 @@ type Recipe struct {
 	Description string
 	PrepTime    string
 	CookingTime string
-	Serves      int
-	Ingredients string
-	Method      string
+	Serves      string
+	Ingredients []string
+	Method      []string
 	OtherNotes  string
 	Source      string
 }

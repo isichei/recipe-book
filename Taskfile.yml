@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  test-all:
+    - go test ./api -v
+    - go test ./database -v
+    - go test ./recipes -v
+    - go test ./types -v
+
+  start-server:
+    - go run main.go
+

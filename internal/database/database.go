@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/isichei/recipe-book/types"
+	"github.com/isichei/recipe-book/internal/types"
 	"strings"
 )
 

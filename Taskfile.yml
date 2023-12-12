@@ -1,12 +1,11 @@
 version: '3'
 
 tasks:
-  test-all:
-    - go test ./api -v
-    - go test ./database -v
-    - go test ./recipes -v
-    - go test ./types -v
+  test:
+    - go test ./internal/recipes -v
 
-  start-server:
-    - go run main.go
+  start-app:
+    - go run ./cmd/web
 
+  make-templates:
+    - templ generate

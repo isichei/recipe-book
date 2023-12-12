@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/isichei/recipe-book/types"
+	"github.com/isichei/recipe-book/internal/types"
 )
 
 func SearchResults(recipeMetadata []types.RecipeMetadata) templ.Component {
@@ -41,7 +41,7 @@ func SearchResults(recipeMetadata []types.RecipeMetadata) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("thumbnails/" + recipe.Uid + ".jpg"))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString("static/img/" + recipe.Uid + ".jpg"))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -88,7 +88,7 @@ func Home(searchResultsView templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css\"><link rel=\"stylesheet\" type=\"text/css\" href=\"static/styles.css\"></head><body><section class=\"section\"><div class=\"container\"><nav class=\"panel\"><p class=\"panel-heading\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css\"><link rel=\"stylesheet\" type=\"text/css\" href=\"static/css/styles.css\"></head><body><section class=\"section\"><div class=\"container\"><nav class=\"panel\"><p class=\"panel-heading\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

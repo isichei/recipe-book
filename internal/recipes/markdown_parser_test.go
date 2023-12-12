@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/isichei/recipe-book/types"
+	"github.com/isichei/recipe-book/internal/types"
 )
 
 func TestParseMarkdownFile(t *testing.T) {
@@ -16,7 +16,7 @@ func TestParseMarkdownFile(t *testing.T) {
 		log.Println(err)
 	}
 	fmt.Println(path)
-	r := ParseMarkdownFile("./example_recipe.md")
+	r := ParseMarkdownFile("testdata/example_recipe.md")
 	er := types.Recipe{
 		Title:       "Cheese Sandwich",
 		Description: "",

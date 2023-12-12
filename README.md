@@ -1,11 +1,17 @@
 # A Simple Personal Recipe Book App
 
-The idea of this is to have a Go App using htmx to search through recipes that I have stored in S3 (or as markdown files).
+A recipe app that takes Markdown files and serves them up in different webpages using HTMX and TEMPL.
+
+Uses task to run different commands to find which commands see:
+
+```
+task --list-all
+```
 
 To run:
 
 ```
-go run main.go
+task run-app 
 ```
 
-Note API also requires a `thumbnails/` folder for which has a thumbnail for each recipe with naming convention `<types.RecipeMetadata.Uid>.jpg`
+> _**Note:**_ Requires images in `ui/static/img/` where each `<recipe-uid>.jpg` file is a thumbnail for the homepage. And the `<recipe-uid>` is the unique ID given to each recipe. Atm it is just a unique filename for the recipe.

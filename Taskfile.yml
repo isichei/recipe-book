@@ -8,4 +8,4 @@ tasks:
     - go run ./cmd/web
 
   make-templates:
-    - templ generate
+    - /home/karik/go/bin/templ generate

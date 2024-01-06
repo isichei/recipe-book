@@ -1,0 +1,56 @@
+package views
+
+import (
+	"github.com/isichei/recipe-book/internal/types"
+)
+
+templ Recipe(r types.Recipe, recipeUid string) {
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>{ r.Title }</title>
+			<script src="https://cdn.tailwindcss.com"></script>
+		</head>
+		<body>
+			<div class="relative right top-15 right-15 h-screen w-16">
+				<img src={ "static/img/" + recipeUid + ".jpg" } alt="Stock image" class="thumbnail"/>
+			</div>
+			<div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-slate-100 py-6 sm:py-12">
+				<div class="text-base text-2xl font-bold text-blue-700 mb-4">
+					<h1 class="text-4xl font-bold mb-4">{ r.Title }</h1>
+					<p><span class="font-bold">Prep Time:</span> { r.PrepTime } </p>
+					<p><span class="font-bold">Cooking Time:</span> { r.CookingTime } </p>
+					<p><span class="font-bold">Serves:</span> { r.Serves } </p>
+					<h2>Description</h2>
+					<p>This high-protein chicken dhansak curry with lentils is the perfect weekday supper to warm you up.With a GI of 50, this meal is high protein, low GI and provides 457 kcal per portion.</p>
+				</div>
+			</div>
+			<div>
+				<h2>Ingredients</h2>
+				<ul>
+					for _, i := range r.Ingredients {
+						<li>{ i }</li>
+					}
+				</ul>
+			</div>
+			<div>
+				<h2>Method</h2>
+				<ol>
+					for _, m := range r.Method {
+						<li>{ m }</li>
+					}
+				</ol>
+			</div>
+			<div>
+				<h2>Other Notes</h2>
+				<p>{ r.OtherNotes } </p>
+			</div>
+			<div id="pic">
+				<img src={ "static/img/" + recipeUid + ".jpg" } alt="Stock image" class="thumbnail"/>
+				<p>{ r.Source }</p>
+			</div>
+		</body>
+	</html>
+}

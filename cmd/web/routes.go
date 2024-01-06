@@ -7,6 +7,7 @@ func (app *application) routes() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", app.getOnly(app.handlerRoot()))
 	mux.HandleFunc("/search-recipes", app.getOnly(app.handleSearchRecipes()))
+	mux.HandleFunc("/view-recipe", app.getOnly(app.viewRecipe()))
 
 	// serve static folder
 	static_fs := http.FileServer(http.Dir("./ui/static"))

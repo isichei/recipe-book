@@ -6,17 +6,19 @@ import (
 
 templ SearchResults(recipeMetadata []types.RecipeMetadata) {
 	for _, recipe := range recipeMetadata {
-		<div class="result-box">
-			<div>
-				<h3><b>{ recipe.Title }</b></h3>
+		<a href={ templ.URL("view-recipe?uid=" + recipe.Uid) }>
+			<div class="result-box">
+				<div>
+					<h3><b>{ recipe.Title }</b></h3>
+				</div>
+				<div>
+					<img src={ "static/img/" + recipe.Uid + ".jpg" } alt="Stock image" class="thumbnail"/>
+				</div>
+				<div class="result-description">
+					<p>{ recipe.Description }</p>
+				</div>
 			</div>
-			<div>
-				<img src={ "static/img/" + recipe.Uid + ".jpg" } alt="Stock image" class="thumbnail"/>
-			</div>
-			<div class="result-description">
-				<p>{ recipe.Description }</p>
-			</div>
-		</div>
+		</a>
 	}
 }
 

@@ -5,7 +5,9 @@ tasks:
     - go test ./internal/recipes -v
 
   start-app:
-    - go run ./cmd/web
+    deps: [make-templates]
+    cmds:
+      - go run ./cmd/web
 
   make-templates:
-    - templ generate
+    - /home/karik/go/bin/templ generate

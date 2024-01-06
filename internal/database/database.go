@@ -7,6 +7,7 @@ import (
 
 type RecipeDatabase interface {
 	SearchRecipes(string) []types.RecipeMetadata
+	GetRecipeMetadata(recipeId string) types.RecipeMetadata
 }
 
 type TestDatabase struct {
@@ -16,7 +17,7 @@ type TestDatabase struct {
 func NewTestDatabase() TestDatabase {
 	data := []types.RecipeMetadata{
 		{
-			Uid:         "chicken-dhansak-recipe",
+			Uid:         "chicken-dhansak",
 			Title:       "Chicken Dhansak",
 			Description: "A chicken dhansak recipe from BBC good foods",
 		},
@@ -55,4 +56,13 @@ func (db TestDatabase) SearchRecipes(text string) []types.RecipeMetadata {
 		}
 		return filtered
 	}
+}
+
+func (db TestDatabase) GetRecipeMetadata(recipeUid string) types.RecipeMetadata {
+	for _, d := range db.data {
+		if d.Uid == recipeUid {
+			return d
+		}
+	}
+	return types.RecipeMetadata{}
 }

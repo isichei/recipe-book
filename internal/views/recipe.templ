@@ -6,50 +6,73 @@ import (
 
 templ Recipe(r types.Recipe, recipeUid string) {
 	<!DOCTYPE html>
-	<html>
+	<html lang="en">
 		<head>
-			<meta charset="utf-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<title>{ r.Title }</title>
-			<script src="https://cdn.tailwindcss.com"></script>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Recipe Page</title>
+			<!-- Link to Tailwind CSS -->
+			<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet"/>
 		</head>
-		<body>
-			<div class="relative right top-15 right-15 h-screen w-16">
-				<img src={ "static/img/" + recipeUid + ".jpg" } alt="Stock image" class="thumbnail"/>
-			</div>
-			<div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-slate-100 py-6 sm:py-12">
-				<div class="text-base text-2xl font-bold text-blue-700 mb-4">
-					<h1 class="text-4xl font-bold mb-4">{ r.Title }</h1>
-					<p><span class="font-bold">Prep Time:</span> { r.PrepTime } </p>
-					<p><span class="font-bold">Cooking Time:</span> { r.CookingTime } </p>
-					<p><span class="font-bold">Serves:</span> { r.Serves } </p>
-					<h2>Description</h2>
-					<p>This high-protein chicken dhansak curry with lentils is the perfect weekday supper to warm you up.With a GI of 50, this meal is high protein, low GI and provides 457 kcal per portion.</p>
+		<body class="bg-gray-100">
+			<div class="flex flex-wrap">
+				<!-- Sidebar -->
+				<div class="w-full md:w-1/6 bg-green-600 p-4 space-y-2">
+					<div class="fixed">
+						<a href="/" class="block text-white hover:bg-green-700 p-2 rounded">Back </a>
+						<a href="#description" class="block text-white hover:bg-green-700 p-2 rounded">Description</a>
+						<a href="#ingredients" class="block text-white hover:bg-green-700 p-2 rounded">Ingredients</a>
+						<a href="#method" class="block text-white hover:bg-green-700 p-2 rounded">Method</a>
+						<a href="#notes" class="block text-white hover:bg-green-700 p-2 rounded">Other Notes</a>
+					</div>
 				</div>
-			</div>
-			<div>
-				<h2>Ingredients</h2>
-				<ul>
-					for _, i := range r.Ingredients {
-						<li>{ i }</li>
-					}
-				</ul>
-			</div>
-			<div>
-				<h2>Method</h2>
-				<ol>
-					for _, m := range r.Method {
-						<li>{ m }</li>
-					}
-				</ol>
-			</div>
-			<div>
-				<h2>Other Notes</h2>
-				<p>{ r.OtherNotes } </p>
-			</div>
-			<div id="pic">
-				<img src={ "static/img/" + recipeUid + ".jpg" } alt="Stock image" class="thumbnail"/>
-				<p>{ r.Source }</p>
+				<!-- Main content -->
+				<!-- <div class="w-full md:w-5/6 p-8"-->
+				<div class="w-full md:w-5/6 p-8">
+					<!-- Div for text content -->
+					<div class="w-full flex flex-wrap md:flex-nowrap">
+						<div class="flex-grow w-full md:w-1/2 p-8">
+							<h1 class="text-3xl font-bold mb-4">{ r.Title }</h1>
+							<div class="mb-4">
+								<span class="text-lg font-semibold">Prep time:</span> { r.PrepTime }
+								<br/>
+								<span class="text-lg font-semibold">Cooking time:</span> { r.CookingTime }
+								<br/>
+								<span class="text-lg font-semibold">Serves:</span> { r.Serves }
+							</div>
+							<div id="description" class="mb-4">
+								<h2 class="text-2xl font-bold mb-2">Description</h2>
+								<p class="text-gray-700 mb-2">{ r.Description }</p>
+							</div>
+						</div>
+						<!-- Div for the image -->
+						<div class="w-full md:w-1/2 p-8">
+							<img src={ "static/img/" + recipeUid + ".jpg" } alt="Image of recipe" class="rounded shadow-lg"/>
+						</div>
+					</div>
+					<div class="flex-grow">
+						<div id="ingredients" class="mb-4">
+							<h2 class="text-2xl font-bold mb-2">Ingredients</h2>
+							<ul class="list-disc list-inside text-gray-700 mb-2">
+								for _, i := range r.Ingredients {
+									<li>{ i }</li>
+								}
+							</ul>
+						</div>
+						<div id="method" class="mb-4">
+							<h2 class="text-2xl font-bold mb-2">Method</h2>
+							<ol class="list-decimal list-inside text-gray-700 mb-2">
+								for _, m := range r.Method {
+									<li>{ m }</li>
+								}
+							</ol>
+						</div>
+						<div id="notes" class="mb-4">
+							<h2 class="text-2xl font-bold mb-2">Other Notes</h2>
+							<p class="text-gray-700 mb-2">{ r.OtherNotes }</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</body>
 	</html>

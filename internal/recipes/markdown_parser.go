@@ -19,13 +19,19 @@ func removeAndStrip(s string, removed string) string {
 	return strings.TrimSpace(strings.Replace(s, removed, "", 1))
 }
 
+func createIngredient(ingredient_str string) types.Ingredient {
+	f, s, _ := strings.Cut(ingredient_str, ":")
+	return types.Ingredient{Name: strings.TrimSpace(f), Amount: strings.TrimSpace(s)}
+}
+
 // Super niave parser - does the job
 func ParseMarkdownFile(filepath string) types.Recipe {
 	// Open the file
 	file, err := os.Open(filepath)
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		panic("ARGHHHGHGHH!")
+		msg := fmt.Sprintf("Error opening file: %s. %s", filepath, err)
+		fmt.Println(msg)
+		panic(msg)
 	}
 	defer file.Close()
 
@@ -58,7 +64,7 @@ func ParseMarkdownFile(filepath string) types.Recipe {
 		case line == "## Other notes:":
 			sub_heading = "other notes"
 		case sub_heading == "ingredients" && strings.HasPrefix(line, "-"):
-			r.Ingredients = append(r.Ingredients, removeAndStrip(line, "-"))
+			r.Ingredients = append(r.Ingredients, createIngredient(removeAndStrip(line, "-")))
 		case sub_heading == "method":
 			split := strings.SplitN(line, ".", 2)
 			r.Method = append(r.Method, strings.TrimSpace(split[1]))

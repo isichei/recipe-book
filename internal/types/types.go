@@ -6,13 +6,17 @@ type RecipeMetadata struct {
 	Description string
 }
 
+type Ingredient struct {
+	Name   string
+	Amount string
+}
 type Recipe struct {
 	Title       string
 	Description string
 	PrepTime    string
 	CookingTime string
 	Serves      string
-	Ingredients []string
+	Ingredients []Ingredient
 	Method      []string
 	OtherNotes  string
 	Source      string

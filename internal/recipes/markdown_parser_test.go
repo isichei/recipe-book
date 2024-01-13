@@ -24,7 +24,7 @@ func TestParseMarkdownFile(t *testing.T) {
 		CookingTime: "blazingly fast",
 		Serves:      "1",
 		Source:      "https://github.com/isichei",
-		Ingredients: []string{"cheese", "2 slices of bread", "Some butter"},
+		Ingredients: []types.Ingredient{{"cheese", ""}, {"Bread", "2 slices"}, {"Some butter", ""}},
 		Method:      []string{"Butter the bread", "Slice the cheese", "Put the cheese inbetween the bread"},
 	}
 	if r.Title != er.Title {
@@ -52,8 +52,8 @@ func TestParseMarkdownFile(t *testing.T) {
 		for i, expected := range er.Ingredients {
 			testName := fmt.Sprintf("Check ingredient at %d", i)
 			t.Run(testName, func(t *testing.T) {
-				if r.Ingredients[i] != expected {
-					t.Errorf("Got wrong ingedient: `%s` expected `%s`", r.Ingredients[i], expected)
+				if r.Ingredients[i].Name != expected.Name || r.Ingredients[i].Amount != expected.Amount {
+					t.Errorf("Got wrong ingedient: `%+v` expected `%+v`", r.Ingredients[i], expected)
 				}
 			})
 		}

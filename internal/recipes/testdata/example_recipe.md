@@ -14,7 +14,7 @@ Source: https://github.com/isichei
 ## Ingredients:
 
 - cheese
-- 2 slices of bread 
+- Bread: 2 slices
 - Some butter
 
 ## Method:

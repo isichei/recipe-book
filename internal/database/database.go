@@ -65,12 +65,17 @@ func NewTestDatabaseFromDir(dirpath string) InMemDatabase {
 // Rubbish search to fill in for a proper search query later
 func (db InMemDatabase) SearchRecipes(text string) []types.RecipeMetadata {
 	if text == "" {
-		return db.data
+		max_amount := len(db.data)
+		if max_amount > 9 {
+			max_amount = 9
+		}
+		return db.data[:max_amount]
+
 	} else {
 		var filtered []types.RecipeMetadata
 
 		for _, recipe := range db.data {
-			if strings.Contains(strings.ToLower(recipe.Description), strings.ToLower(text)) {
+			if strings.Contains(strings.ToLower(recipe.Title), strings.ToLower(text)) {
 				filtered = append(filtered, recipe)
 			}
 		}

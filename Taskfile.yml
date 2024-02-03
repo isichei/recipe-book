@@ -1,5 +1,7 @@
 version: '3'
 
+dotenv: ['.env']
+
 tasks:
   test:
     - go test ./internal/recipes -v
@@ -7,7 +9,23 @@ tasks:
   start-app:
     deps: [make-templates]
     cmds:
-      - go run ./cmd/web
-
+      - go run ./cmd/web --listenaddr=":{{.PORT}}"
+    vars:
+      PORT: '{{.PORT | default "8000"}}'
+  
   make-templates:
     - /home/karik/go/bin/templ generate
+
+  download-assests:
+    cmds:
+      - aws s3 cp s3://{{.BUCKET}}/ui/static/img ui/static/img --recursive
+      - aws s3 cp s3://{{.BUCKET}}/static/recipe_mds static/recipe_mds --recursive
+    requires:
+      vars: ["BUCKET"]
+
+  upload-assests:
+    cmds:
+      - aws s3 cp ui/static/img s3://{{.BUCKET}}/ui/static/img --recursive
+      - aws s3 cp static/recipe_mds s3://{{.BUCKET}}/static/recipe_mds --recursive
+    requires:
+      vars: ["BUCKET"]

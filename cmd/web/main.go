@@ -17,7 +17,6 @@ func main() {
 	listenAddr := flag.String("listenaddr", ":8000", "The address for the API to listen on")
 	flag.Parse()
 
-	// app := &application{database.NewTestDatabase()}
 	app := &application{database.NewTestDatabaseFromDir("./static/recipe_mds/")}
 
 	log.Printf("Starting Recipe App on %s...\n", *listenAddr)

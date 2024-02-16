@@ -14,7 +14,7 @@ tasks:
       PORT: '{{.PORT | default "8000"}}'
   
   make-templates:
-    - /home/karik/go/bin/templ generate
+    - templ generate
 
   download-assests:
     cmds:

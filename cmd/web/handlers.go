@@ -1,27 +1,38 @@
 package main
 
 import (
+	"net/http"
+
+	"github.com/isichei/recipe-book/internal/database"
 	"github.com/isichei/recipe-book/internal/recipes"
 	"github.com/isichei/recipe-book/internal/views"
-	"log"
-	"net/http"
 )
-
+		
 // handler for home page
-func (app *application) handlerRoot() http.HandlerFunc {
-
-	search_view := views.SearchResults(app.db.SearchRecipes(""))
-	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.String())
+func handlerRoot(db database.RecipeDatabase) http.Handler {
+	search_view := views.SearchResults(db.SearchRecipes(""))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		views.Home(search_view).Render(r.Context(), w)
-	}
+	})
+}
+
+func handlerOldRoot(db database.RecipeDatabase) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Error parsing form data", http.StatusInternalServerError)
+			return
+		}
+		text := r.Form.Get("text")
+		search_view := views.SearchResults(db.SearchRecipes(text))
+		views.OldHome(search_view, text).Render(r.Context(), w)
+	})
 }
 
 // handler for the search recipe
-func (app *application) handleSearchRecipes() http.HandlerFunc {
+func handleSearchRecipes(db database.RecipeDatabase) http.Handler {
 
-	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.String())
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Parse the form data to retrieve the parameter value
 		err := r.ParseForm()
 		if err != nil {
@@ -29,18 +40,17 @@ func (app *application) handleSearchRecipes() http.HandlerFunc {
 			return
 		}
 
-		recipeMetadata := app.db.SearchRecipes(r.Form.Get("text"))
+		recipeMetadata := db.SearchRecipes(r.Form.Get("text"))
 		views.SearchResults(recipeMetadata).Render(r.Context(), w)
-	}
+	})
 }
 
 // View a recipe
-func (app *application) viewRecipe() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func viewRecipe(db database.RecipeDatabase) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		recipeUid := r.URL.Query().Get("uid")
 
-		recipeMeta := app.db.GetRecipeMetadata(recipeUid)
-		log.Printf("%s - matched uid: %s\n", r.URL.String(), recipeMeta.Uid)
+		recipeMeta := db.GetRecipeMetadata(recipeUid)
 		if recipeMeta.Uid == "" {
 			http.NotFound(w, r)
 			return
@@ -48,5 +58,5 @@ func (app *application) viewRecipe() http.HandlerFunc {
 
 		recipe := recipes.ParseMarkdownFile("./static/recipe_mds/" + recipeUid + ".md")
 		views.Recipe(recipe, recipeUid).Render(r.Context(), w)
-	}
+	})
 }

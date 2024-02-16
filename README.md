@@ -2,7 +2,7 @@
 
 A recipe app that takes Markdown files and serves them up in different webpages using HTMX and TEMPL.
 
-Uses task to run different commands to find which commands see:
+Uses (task)[https://taskfile.dev/installation/] to run different commands to find which commands see:
 
 ```
 task --list-all

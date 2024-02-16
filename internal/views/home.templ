@@ -57,3 +57,48 @@ templ Home(searchResultsView templ.Component) {
 		</body>
 	</html>
 }
+
+// Non-htmx home page for my old iPad (I cry)
+templ OldHome(searchResultsView templ.Component, text string) {
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>Search</title>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"/>
+			<link rel="stylesheet" type="text/css" href="static/css/styles.css"/>
+		</head>
+		<body>
+			<section class="section">
+				<div class="container">
+					<nav class="panel">
+						<p class="panel-heading">
+							Recipes
+						</p>
+						<div class="panel-block">
+							<p class="control has-icons-left">
+								<input class="input" id="search-input" type="text" placeholder="Search" name="text" value={ text }/>
+								<button onclick="sendGetRequest()">Submit</button>
+								<span class="icon is-left">
+									<i class="fas fa-search" aria-hidden="true"></i>
+								</span>
+							</p>
+						</div>
+						<div id="search-results" class="results-wrapper" style="padding: 20px;">
+							@searchResultsView
+						</div>
+					</nav>
+				</div>
+			</section>
+			<script>
+		function sendGetRequest() {
+			var inputText = document.getElementById('search-input').value;
+			var url = '/old?text=' + encodeURIComponent(inputText);
+			
+			window.location.href = url;
+		}
+		</script>
+		</body>
+	</html>
+}

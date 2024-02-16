@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"runtime/debug"
+	"strings"
 )
 
 func (app *application) serverError(w http.ResponseWriter, r *http.Request, err error) {
@@ -12,15 +13,13 @@ func (app *application) serverError(w http.ResponseWriter, r *http.Request, err 
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
-// middle where to check if is a GetRequest
-func (app *application) getOnly(h http.HandlerFunc) http.HandlerFunc {
+// Middleware to check if the browser works with htmx, or more specifically is it my super old iPad
+func (app *application) htmxEnabled(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			w.Header().Set("Allow", http.MethodGet)
-			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-			return
-		} else {
-			h(w, r)
+		userAgent := r.Header["User-Agent"][0]
+		if strings.Contains(userAgent, "iPad") && strings.Contains(userAgent, "9_3_5") {
+			
 		}
-	}
 }
+}
+

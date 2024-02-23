@@ -5,6 +5,7 @@ dotenv: ['.env']
 tasks:
   test:
     - go test ./internal/recipes -v
+    - go test ./internal/database -v
 
   start-app:
     deps: [make-templates]

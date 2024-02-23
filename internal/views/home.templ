@@ -7,98 +7,97 @@ import (
 templ SearchResults(recipeMetadata []types.RecipeMetadata) {
 	for _, recipe := range recipeMetadata {
 		<a href={ templ.URL("view-recipe?uid=" + recipe.Uid) }>
-			<div class="result-box">
-				<div>
-					<h3><b>{ recipe.Title }</b></h3>
-				</div>
-				<div>
-					<img src={ "static/img/" + recipe.Uid + ".jpg" } alt="Stock image" class="thumbnail"/>
-				</div>
-				<div class="result-description">
-					<p>{ recipe.Description }</p>
-				</div>
+			<div class="flex flex-col space-y-2">
+				<h2 class="font-semibold text-lg md:text-base lg:text-lg xl:text-base">{ recipe.Title } </h2>
+				<img
+					src={ "static/img/" + recipe.Uid + ".jpg" }
+					alt={ recipe.Title }
+					width="400"
+					height="300"
+					class="aspect-[4/3] object-cover rounded-lg border border-gray-200 dark:border-gray-800"
+				/>
+				<p class="green-600">{ recipe.Description }</p>
 			</div>
 		</a>
 	}
 }
 
-templ Home(searchResultsView templ.Component) {
+templ HomeComposition(searchResultsView templ.Component, oldBrowser bool, text string) {
 	<!DOCTYPE html>
-	<html>
+	<html lang="en">
 		<head>
-			<meta charset="utf-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<title>Search</title>
-			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"/>
-			<link rel="stylesheet" type="text/css" href="static/css/styles.css"/>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Recipe Page</title>
+			<!-- Link to Tailwind CSS -->
+			<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet"/>
 		</head>
-		<body>
-			<section class="section">
-				<div class="container">
-					<nav class="panel">
-						<p class="panel-heading">
-							Recipes
-						</p>
-						<div class="panel-block">
-							<p class="control has-icons-left">
-								<input class="input" type="text" placeholder="Search" name="text" hx-trigger="keyup changed delay:500ms" hx-get="/search-recipes" hx-target="#search-results"/>
-								<span class="icon is-left">
-									<i class="fas fa-search" aria-hidden="true"></i>
-								</span>
-							</p>
+		<body class="bg-gray-100">
+			<div class="px-4 md:px-6 py-6 space-y-6">
+				<div class="flex flex-col space-y-2">
+					<h1 class="text-3xl font-bold tracking-tight">Search for recipes</h1>
+					<div
+						class="rounded-lg border border-gray-200 dark:border-gray-800 flex items-center"
+						data-dashlane-rid="9b86accfad33fcfd"
+						data-form-type=""
+					>
+						<div class="relative flex-1">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="absolute inset-y-0 left-0 z-10 flex items-center pl-3"
+							>
+								<circle cx="11" cy="11" r="8"></circle>
+								<path d="m21 21-4.3-4.3"></path>
+							</svg>
+							<input
+								id="search-bar"
+								class="flex h-10 rounded-md border border-input px-3 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-3 w-full py-3 bg-transparent appearance-none"
+								name="text"
+								type="text"
+								if oldBrowser {
+									placeholder={ text }
+								} else {
+									placeholder="Search for Recipes..."
+									hx-trigger="keyup changed delay:500ms"
+									hx-get="/search-recipes"
+									hx-target="#search-results"
+								}
+							/>
 						</div>
-						<div id="search-results" class="results-wrapper" style="padding: 20px;">
-							@searchResultsView
-						</div>
-					</nav>
+						if oldBrowser {
+							<button
+								class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-white bg-green-700 hover:bg-primary/90 h-10 px-4 py-2"
+								onclick="sendGetRequest()"
+							>
+								Search
+							</button>
+						}
+					</div>
 				</div>
-			</section>
-			<script src="https://unpkg.com/htmx.org@1.7.0"></script>
-		</body>
-	</html>
-}
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="search-results">
+					@searchResultsView
+				</div>
+			</div>
+			if oldBrowser {
+				<script>
+				function sendGetRequest() {
+					var inputText = document.getElementById('search-bar').value;
+					var url = '/old?text=' + encodeURIComponent(inputText);
 
-// Non-htmx home page for my old iPad (I cry)
-templ OldHome(searchResultsView templ.Component, text string) {
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="utf-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<title>Search</title>
-			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"/>
-			<link rel="stylesheet" type="text/css" href="static/css/styles.css"/>
-		</head>
-		<body>
-			<section class="section">
-				<div class="container">
-					<nav class="panel">
-						<p class="panel-heading">
-							Recipes
-						</p>
-						<div class="panel-block">
-							<p class="control has-icons-left">
-								<input class="input" id="search-input" type="text" placeholder="Search" name="text" value={ text }/>
-								<button onclick="sendGetRequest()">Submit</button>
-								<span class="icon is-left">
-									<i class="fas fa-search" aria-hidden="true"></i>
-								</span>
-							</p>
-						</div>
-						<div id="search-results" class="results-wrapper" style="padding: 20px;">
-							@searchResultsView
-						</div>
-					</nav>
-				</div>
-			</section>
-			<script>
-		function sendGetRequest() {
-			var inputText = document.getElementById('search-input').value;
-			var url = '/old?text=' + encodeURIComponent(inputText);
-			
-			window.location.href = url;
-		}
-		</script>
+					window.location.href = url;
+				}
+				</script>
+			} else {
+				<script src="https://unpkg.com/htmx.org@1.7.0"></script>
+			}
 		</body>
 	</html>
 }

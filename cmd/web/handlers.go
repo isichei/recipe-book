@@ -7,12 +7,12 @@ import (
 	"github.com/isichei/recipe-book/internal/recipes"
 	"github.com/isichei/recipe-book/internal/views"
 )
-		
+
 // handler for home page
 func handlerRoot(db database.RecipeDatabase) http.Handler {
 	search_view := views.SearchResults(db.SearchRecipes(""))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		views.Home(search_view).Render(r.Context(), w)
+		views.HomeComposition(search_view, false, "").Render(r.Context(), w)
 	})
 }
 
@@ -25,7 +25,7 @@ func handlerOldRoot(db database.RecipeDatabase) http.Handler {
 		}
 		text := r.Form.Get("text")
 		search_view := views.SearchResults(db.SearchRecipes(text))
-		views.OldHome(search_view, text).Render(r.Context(), w)
+		views.HomeComposition(search_view, true, text).Render(r.Context(), w)
 	})
 }
 

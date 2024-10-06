@@ -15,3 +15,12 @@ task run-app
 ```
 
 > _**Note:**_ Requires images in `ui/static/img/` where each `<recipe-uid>.jpg` file is a thumbnail for the homepage. And the `<recipe-uid>` is the unique ID given to each recipe. Atm it is just a unique filename for the recipe.
+
+## Installing templ on EC2 machine
+
+> (Assuming you have already ran the setup script)
+
+- `go mod download -json` gets you the installation path
+- cd into that...
+- `cd cmd/templ && go install` you should have the correct version runnable in `/home/ec2-user/go/bin/`
+

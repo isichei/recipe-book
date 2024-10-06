@@ -1,22 +1,25 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func (app *application) routes() http.Handler {
 
 	mux := http.NewServeMux()
-	mux.Handle("/", redirectOldBrowser(handlerRoot(app.db)))
-	mux.Handle("/old", handlerOldRoot(app.db))
-	mux.Handle("/search-recipes", handleSearchRecipes(app.db))
-	mux.Handle("/view-recipe", viewRecipe(app.db))
+	mux.Handle("/", getOnly(redirectOldBrowser(handlerRoot(app.db))))
+	mux.Handle("/old", getOnly(handlerOldRoot(app.db)))
+	mux.Handle("/search-recipes", getOnly(handleSearchRecipes(app.db)))
+	mux.Handle("/view-recipe", getOnly(viewRecipe(app.db)))
+	
+	if app.enableWrite {
+		mux.Handle("/add-recipe", addRecipe(app.db))
+	}
 
-	// serve static folder
-	static_fs := http.FileServer(http.Dir("./ui/static"))
-	mux.Handle("/static/", http.StripPrefix("/static/", static_fs))
+	// serve static folder, either as embedded FS or local FS
+	mux.Handle("/static/", staticFileServer(app.staticFolder))
 
 	// Do some typing then add some middleware
-	var handler http.Handler = mux
-	handler = getOnly(handler)
-	return logRequest(handler, app.logger)
+	return logRequest(mux, app.logger)
 
 }

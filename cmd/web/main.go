@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -12,16 +13,45 @@ import (
 
 type application struct {
 	db     database.RecipeDatabase
+	staticFolder string 
 	logger *slog.Logger
+	enableWrite bool
 }
 
 func main() {
-	listenAddr := flag.String("listenaddr", ":8000", "The address for the API to listen on")
+	defaultPort, portExists := os.LookupEnv("PORT")
+	if !portExists {
+		defaultPort = "8000"
+	}
+
+	defaultRecipeDir, defaultDirExists := os.LookupEnv("RECIPE_FILES")
+	if !defaultDirExists {
+		defaultRecipeDir =  "./static/recipe_mds/"
+	}
+
+	port := flag.String("port", defaultPort, fmt.Sprintf("The address for the API to listen on. (Default %s)", defaultPort))
+	recipeDir := flag.String("recipe-dir", defaultRecipeDir, fmt.Sprintf("Path to the recipe files (if a directory then expects it to contain markdown files for each recipe. If a filepath expects a database file of recipes.)", defaultRecipeDir))
+	dbPath := flag.String("db", "", "Path to the recipe db file")
+	staticPath := flag.String("static-path", "/static/", "Path to the static asset folder")
+	enableWrite := flag.Bool("enable-write", false, "Enable the /add-recipe path in the appp")
 	flag.Parse()
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	app := &application{database.NewTestDatabaseFromDir("./static/recipe_mds/"), logger}
+	var db database.RecipeDatabase
+	var err error
 
-	app.logger.Info(fmt.Sprintf("Starting Recipe App on %s...", *listenAddr))
-	http.ListenAndServe(*listenAddr, app.routes())
+	if *dbPath == "" && *recipeDir == "" {
+		log.Fatal("Both db and recipe-dir were set to empty strings need to specify one")
+	} else if *dbPath != "" {
+		db, err = database.NewSqlDatabase(*dbPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		db = database.NewTestDatabaseFromDir(*recipeDir)
+	}
+	app := &application{db, *staticPath, logger, *enableWrite}
+	app.logger.Info(fmt.Sprintf("Starting Recipe App on %s...", *port))
+	http.ListenAndServe(":" + *port, app.routes())
 }

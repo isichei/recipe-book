@@ -2,29 +2,26 @@ package recipes
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"testing"
-
-	"github.com/isichei/recipe-book/internal/types"
 )
 
 func TestParseMarkdownFile(t *testing.T) {
-	path, err := os.Getwd()
+	testFilePath := "testdata/example_recipe.md"
+	dat, err := os.ReadFile(testFilePath)
 	if err != nil {
-		log.Println(err)
+		t.Errorf("Failed to read test file: %s", testFilePath)
 	}
-	fmt.Println(path)
-	r := ParseMarkdownFile("testdata/example_recipe.md")
-	er := types.Recipe{
+	r := ParseMarkdownFile(string(dat))
+	er := Recipe{
 		Title:       "Cheese Sandwich",
 		Description: "",
 		PrepTime:    "2 mins",
 		CookingTime: "blazingly fast",
 		Serves:      "1",
 		Source:      "https://github.com/isichei",
-		Ingredients: []types.Ingredient{{"cheese", ""}, {"Bread", "2 slices"}, {"Some butter", ""}},
+		Ingredients: []Ingredient{{"cheese", ""}, {"Bread", "2 slices"}, {"Some butter", ""}},
 		Method:      []string{"Butter the bread", "Slice the cheese", "Put the cheese inbetween the bread"},
 	}
 	if r.Title != er.Title {

@@ -3,8 +3,6 @@ package recipes
 import (
 	"bufio"
 	"fmt"
-	"github.com/isichei/recipe-book/internal/types"
-	"os"
 	"strings"
 )
 
@@ -19,27 +17,18 @@ func removeAndStrip(s string, removed string) string {
 	return strings.TrimSpace(strings.Replace(s, removed, "", 1))
 }
 
-func createIngredient(ingredient_str string) types.Ingredient {
+func createIngredient(ingredient_str string) Ingredient {
 	f, s, _ := strings.Cut(ingredient_str, ":")
-	return types.Ingredient{Name: strings.TrimSpace(f), Amount: strings.TrimSpace(s)}
+	return Ingredient{Name: strings.TrimSpace(f), Amount: strings.TrimSpace(s)}
 }
 
 // Super niave parser - does the job
-func ParseMarkdownFile(filepath string) types.Recipe {
-	// Open the file
-	file, err := os.Open(filepath)
-	if err != nil {
-		msg := fmt.Sprintf("Error opening file: %s. %s", filepath, err)
-		fmt.Println(msg)
-		panic(msg)
-	}
-	defer file.Close()
+func ParseMarkdownFile(fileData string) Recipe {
 
-	// Create a scanner to read the file line by line
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(strings.NewReader(fileData))
 
 	// Iterate over each line in the file getting recipe values
-	r := types.Recipe{}
+	r := Recipe{}
 	sub_heading := ""
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -75,8 +64,8 @@ func ParseMarkdownFile(filepath string) types.Recipe {
 
 	// Check for any errors during scanning
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading file:", err)
-		panic("!")
+		errMsg := fmt.Sprint("Error reading file:", err)
+		panic(errMsg)
 	}
 	return r
 }

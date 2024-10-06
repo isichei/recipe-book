@@ -4,20 +4,62 @@ dotenv: ['.env']
 
 tasks:
   test:
-    - go test ./internal/recipes -v
-    - go test ./internal/database -v
+    desc: Run the app tests
+    cmds:
+      - go test ./internal/recipes -v
+      - go test ./internal/database -v
+  
+  build-cli:
+    desc: Build the cli binary
+    cmds:
+      - go build -o bin/cli cmd/cli/*
+
+  build-web:
+    deps: [make-templates]
+    desc: Build the web server binary
+    cmds:
+      - go build -o bin/web cmd/web/*
+
+  build-all:
+    desc: Build the web and cli binaries
+    deps: 
+      - test
+      - build-cli
+      - build-web
+
+  fresh-db:
+    desc: Create a fresh db at recipes.db
+    cmds:
+      - rm -f recipes.db
+      - ./bin/cli create-db-from-files
 
   start-app:
-    deps: [make-templates]
+    deps:
+      - task: test
+        when: "{{not .SKIP_TEST}}"
+      - task: build-all
+    desc: Run the app locally
     cmds:
-      - go run ./cmd/web --listenaddr=":{{.PORT}}"
+      - ./bin/web --port="{{.PORT}}" --db "{{.DB_FILE}}" --static-path ./static/ --enable-write 
     vars:
       PORT: '{{.PORT | default "8000"}}'
+      DB_FILE: '{{.DB_FILE | default "recipes.db"}}'
   
   make-templates:
-    - templ generate
+    desc: Regenerate all the HTML templates
+    cmds:
+      - "{{if .TEMPL_EXEC}}{{.TEMPL_EXEC}}{{else}}templ{{end}} generate"
+
+  download-static-assets:
+    desc: Downloads static assets from the aws bucket to the local static folder
+    cmds:
+      - echo $AWS_REGION
+      - bin/cli sync-from-aws --bucket {{.BUCKET}}
+    requires:
+      vars: ["BUCKET"]
 
   download-assests:
+    desc: Downloads all the markdown files and images for the recipes to S3
     cmds:
       - aws s3 cp s3://{{.BUCKET}}/ui/static/img ui/static/img --recursive
       - aws s3 cp s3://{{.BUCKET}}/static/recipe_mds static/recipe_mds --recursive
@@ -25,6 +67,7 @@ tasks:
       vars: ["BUCKET"]
 
   upload-assests:
+    desc: Uploads all the markdown files and images for the recipes from S3
     cmds:
       - aws s3 cp ui/static/img s3://{{.BUCKET}}/ui/static/img --recursive
       - aws s3 cp static/recipe_mds s3://{{.BUCKET}}/static/recipe_mds --recursive

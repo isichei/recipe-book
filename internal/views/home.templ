@@ -1,10 +1,10 @@
 package views 
 
 import (
-	"github.com/isichei/recipe-book/internal/types"
+	"github.com/isichei/recipe-book/internal/recipes"
 )
 
-templ SearchResults(recipeMetadata []types.RecipeMetadata) {
+templ SearchResults(recipeMetadata []recipes.RecipeMetadata) {
 	for _, recipe := range recipeMetadata {
 		<a href={ templ.URL("view-recipe?uid=" + recipe.Uid) }>
 			<div class="flex flex-col space-y-2">

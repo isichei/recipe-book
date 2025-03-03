@@ -16,17 +16,31 @@ templ Recipe(r recipes.Recipe, recipeUid string) {
 		</head>
 		<body class="bg-gray-100">
 			<div class="flex">
-				<!-- Sidebar -->
 				<div class="fixed w-1/6 bg-green-600 h-screen p-4 space-y-2 flex flex-col">
-					<a href="/" class="block text-white hover:bg-green-700 p-2 rounded">
+					<a href="/" class="block text-white hover:bg-green-700 p-2 rounded flex items-center space-x-2">
 						<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
 						</svg>
+						<span class="hidden md:block">Home</span>
 					</a>
-					<a href="#description" class="block text-white hover:bg-green-700 p-2 rounded">Description</a>
-					<a href="#ingredients" class="block text-white hover:bg-green-700 p-2 rounded">Ingredients</a>
-					<a href="#method" class="block text-white hover:bg-green-700 p-2 rounded">Method</a>
-					<a href="#notes" class="block text-white hover:bg-green-700 p-2 rounded">Other Notes</a>
+					<a href="#description" class="block text-white hover:bg-green-700 p-2 rounded flex items-center space-x-2">
+						<img src="static/img/icons/description.png" alt="Description" class="h-6 w-6"></img>
+						<span class="hidden md:block">Description</span>
+					</a>
+					<a href="#ingredients" class="block text-white hover:bg-green-700 p-2 rounded flex items-center space-x-2">
+						<img src="static/img/icons/ingredients.png" alt="Ingredients" class="h-6 w-6"></img>
+						<span class="hidden md:block">Ingredients</span>
+					</a>
+					<a href="#method" class="block text-white hover:bg-green-700 p-2 rounded flex items-center space-x-2">
+						<img src="static/img/icons/method.png" alt="Method" class="h-6 w-6"></img>
+						<span class="hidden md:block">Method</span>
+					</a>
+					<a href="#notes" class="block text-white hover:bg-green-700 p-2 rounded flex items-center space-x-2">
+						<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.0002 5V19M10 5L6 19M14 5L12 19"></path>
+						</svg>
+						<span class="hidden md:block">Other Notes</span>
+					</a>
 				</div>
 				<!-- Main content -->
 				<div class="flex-grow p-4 text-gray-700" style="margin-left: 16.666667%;">

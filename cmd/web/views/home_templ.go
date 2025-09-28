@@ -41,7 +41,7 @@ func SearchResults(recipeMetadata []recipes.RecipeMetadata) templ.Component {
 			var templ_7745c5c3_Var2 templ.SafeURL
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("view-recipe?uid=" + recipe.Uid))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/home.templ`, Line: 9, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/home.templ`, Line: 9, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -54,7 +54,7 @@ func SearchResults(recipeMetadata []recipes.RecipeMetadata) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(recipe.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/home.templ`, Line: 11, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/home.templ`, Line: 11, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -67,7 +67,7 @@ func SearchResults(recipeMetadata []recipes.RecipeMetadata) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("static/img/" + recipe.Uid + ".jpg")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/home.templ`, Line: 13, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/home.templ`, Line: 13, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -80,7 +80,7 @@ func SearchResults(recipeMetadata []recipes.RecipeMetadata) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(recipe.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/home.templ`, Line: 14, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/home.templ`, Line: 14, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -93,7 +93,7 @@ func SearchResults(recipeMetadata []recipes.RecipeMetadata) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(recipe.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/home.templ`, Line: 19, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/home.templ`, Line: 19, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -141,7 +141,7 @@ func HomeComposition(searchResultsView templ.Component, oldBrowser bool, text st
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/home.templ`, Line: 66, Col: 27}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/home.templ`, Line: 66, Col: 27}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {

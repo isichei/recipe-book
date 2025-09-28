@@ -40,7 +40,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(r.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 48, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 48, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -53,7 +53,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("static/img/" + recipeUid + ".jpg")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 53, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 53, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -66,7 +66,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(r.PrepTime)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 58, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 58, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -79,7 +79,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(r.CookingTime)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 60, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 60, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -92,7 +92,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(r.Serves)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 62, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 62, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -105,7 +105,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var7 templ.SafeURL
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL(r.Source))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 64, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 64, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -118,7 +118,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(r.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 70, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 70, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -137,7 +137,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(i.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 78, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 78, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -155,7 +155,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(i.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 80, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 80, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -168,7 +168,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(i.Amount)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 80, Col: 107}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 80, Col: 107}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -192,7 +192,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(m)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 89, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 89, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -210,7 +210,7 @@ func Recipe(r recipes.Recipe, recipeUid string) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(r.OtherNotes)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/recipe.templ`, Line: 95, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/views/recipe.templ`, Line: 95, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/isichei/recipe-book/internal/recipes"
 	"github.com/isichei/recipe-book/internal/database"
-	"github.com/isichei/recipe-book/internal/views"
+	"github.com/isichei/recipe-book/cmd/web/views"
 )
 
 // handler for home page

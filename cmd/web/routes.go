@@ -7,17 +7,19 @@ import (
 func (app *application) routes() http.Handler {
 
 	mux := http.NewServeMux()
-	mux.Handle("/", getOnly(redirectOldBrowser(handlerRoot(app.db))))
-	mux.Handle("/old", getOnly(handlerOldRoot(app.db)))
-	mux.Handle("/search-recipes", getOnly(handleSearchRecipes(app.db)))
-	mux.Handle("/view-recipe", getOnly(viewRecipe(app.db)))
+	mux.Handle("GET /", redirectOldBrowser(handlerRoot(app.db)))
+
+	mux.Handle("GET /favicon.ico", http.NotFoundHandler())
+	mux.Handle("GET /old", handlerOldRoot(app.db))
+	mux.Handle("GET /search-recipes", handleSearchRecipes(app.db))
+	mux.Handle("GET /view-recipe", viewRecipe(app.db))
 	
 	if app.enableWrite {
-		mux.Handle("/add-recipe", addRecipe(app.db))
+		mux.Handle("GET /add-recipe", addRecipe(app.db))
 	}
 
 	// serve static folder, either as embedded FS or local FS
-	mux.Handle("/static/", staticFileServer(app.staticFolder))
+	mux.Handle("GET /static/", staticFileServer(app.staticFolder))
 
 	// Do some typing then add some middleware
 	return logRequest(mux, app.logger)

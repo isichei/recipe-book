@@ -6,18 +6,6 @@ import (
 	"strings"
 )
 
-func getOnly(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			w.Header().Set("Allow", http.MethodGet)
-			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-			return
-		} else {
-			h.ServeHTTP(w, r)
-		}
-	})
-}
-
 func redirectOldBrowser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user_agent := r.Header["User-Agent"][0]

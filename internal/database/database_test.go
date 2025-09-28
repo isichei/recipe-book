@@ -1,8 +1,8 @@
 package database
 
 import (
-	"testing"
 	"github.com/isichei/recipe-book/internal/recipes"
+	"testing"
 )
 
 func TestSet(t *testing.T) {
@@ -37,7 +37,7 @@ func TestSetCache(t *testing.T) {
 	}
 }
 
-func TestSqlDatabase(t * testing.T) {
+func TestSqlDatabase(t *testing.T) {
 	db, err := NewSqlDatabase(":memory:")
 	if err != nil {
 		t.Errorf("No error should have occurred. Error: %s\n", err)

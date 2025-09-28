@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/isichei/recipe-book/internal/recipes"
-	"github.com/isichei/recipe-book/internal/database"
 	"github.com/isichei/recipe-book/cmd/web/views"
+	"github.com/isichei/recipe-book/internal/database"
+	"github.com/isichei/recipe-book/internal/recipes"
 )
 
 // handler for home page
@@ -92,14 +92,14 @@ func addRecipe(db database.RecipeDatabase) http.Handler {
 			}
 
 			recipe := recipes.Recipe{
-				Title: r.Form.Get("title"),
-				PrepTime: r.Form.Get("prep-time"),
+				Title:       r.Form.Get("title"),
+				PrepTime:    r.Form.Get("prep-time"),
 				CookingTime: r.Form.Get("cook-time"),
-				Serves: r.Form.Get("serves"),
+				Serves:      r.Form.Get("serves"),
 				Ingredients: ingredients,
-				Method: r.Form["method-step[]"],
-				OtherNotes: r.Form.Get("other-notes"),
-				Source: r.Form.Get("source"),
+				Method:      r.Form["method-step[]"],
+				OtherNotes:  r.Form.Get("other-notes"),
+				Source:      r.Form.Get("source"),
 			}
 			recipeUid = r.Form.Get("uid")
 			if recipeUid == "" {

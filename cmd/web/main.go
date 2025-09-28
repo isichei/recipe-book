@@ -11,11 +11,17 @@ import (
 	"github.com/isichei/recipe-book/internal/database"
 )
 
+type creds struct {
+	username string
+	password string
+}
+
 type application struct {
-	db     database.RecipeDatabase
-	staticFolder string 
-	logger *slog.Logger
-	enableWrite bool
+	creds        creds
+	db           database.RecipeDatabase
+	staticFolder string
+	logger       *slog.Logger
+	enableWrite  bool
 }
 
 func main() {
@@ -26,7 +32,16 @@ func main() {
 
 	defaultRecipeDir, defaultDirExists := os.LookupEnv("RECIPE_FILES")
 	if !defaultDirExists {
-		defaultRecipeDir =  "./static/recipe_mds/"
+		defaultRecipeDir = "./static/recipe_mds/"
+	}
+
+	user, userExists := os.LookupEnv("RECIPE_USER")
+	if !userExists {
+		user = "user"
+	}
+	password, passwordExists := os.LookupEnv("RECIPE_PASSWORD")
+	if !passwordExists {
+		password = "password"
 	}
 
 	port := flag.String("port", defaultPort, fmt.Sprintf("The address for the API to listen on. (Default %s)", defaultPort))
@@ -51,7 +66,8 @@ func main() {
 	} else {
 		db = database.NewTestDatabaseFromDir(*recipeDir)
 	}
-	app := &application{db, *staticPath, logger, *enableWrite}
+	appCreds := creds{user, password}
+	app := &application{appCreds, db, *staticPath, logger, *enableWrite}
 	app.logger.Info(fmt.Sprintf("Starting Recipe App on %s...", *port))
-	http.ListenAndServe(":" + *port, app.routes())
+	http.ListenAndServe(":"+*port, app.routes())
 }

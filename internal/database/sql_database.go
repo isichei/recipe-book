@@ -20,7 +20,7 @@ func (db SqlDatabase) SearchRecipes(text string) []recipes.RecipeMetadata {
 
 	if strings.TrimSpace(text) == "" {
 		return db.getSomeRecipes(9)
-	} 
+	}
 	foundRecipes := make(Set)
 	recipeMetadata := []recipes.RecipeMetadata{}
 	searchTerms := strings.Split(strings.ToLower(text), " ")
@@ -34,7 +34,7 @@ func (db SqlDatabase) SearchRecipes(text string) []recipes.RecipeMetadata {
 		likeSearch = "%" + searchTerm + "%"
 		rows, err := db.dbEngine.Query(query, likeSearch, likeSearch)
 		if err != nil {
-		fmt.Println(err)
+			fmt.Println(err)
 			log.Fatal(err)
 		}
 		defer rows.Close()
@@ -43,7 +43,7 @@ func (db SqlDatabase) SearchRecipes(text string) []recipes.RecipeMetadata {
 				log.Fatal(err)
 			}
 			if !foundRecipes[recipeUid] {
-			recipeMetadata = append(recipeMetadata, recipes.RecipeMetadata{Uid: recipeUid, Title: title, Description: desc})
+				recipeMetadata = append(recipeMetadata, recipes.RecipeMetadata{Uid: recipeUid, Title: title, Description: desc})
 				foundRecipes.Add(recipeUid)
 			}
 		}
@@ -74,7 +74,6 @@ func (db SqlDatabase) getSomeRecipes(n int) []recipes.RecipeMetadata {
 	}
 	return recipeMetadata
 }
-
 
 func (db SqlDatabase) GetRecipeMetadata(recipeUid string) recipes.RecipeMetadata {
 	var title, desc string

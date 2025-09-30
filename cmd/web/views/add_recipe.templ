@@ -1,14 +1,14 @@
 package views
 
 templ CompIngredient() {
-<div class="flex items-center space-x-4 mt-2">
-  <input type="text" name="ingredient-item[]" placeholder="Ingredient" class="border border-gray-300 p-2 rounded flex-grow"></input>
-  <input type="text" name="ingredient-amount[]" placeholder="Amount" class="border border-gray-300 p-2 rounded flex-grow"></input>
+<div class="flex items-center space-x-3 mt-3">
+  <input type="text" name="ingredient-item[]" placeholder="Ingredient" class="border border-gray-200 p-3 rounded-lg flex-grow focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
+  <input type="text" name="ingredient-amount[]" placeholder="Amount" class="border border-gray-200 p-3 rounded-lg flex-grow focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
 </div>
 }
 
 templ CompMethod() {
-	<input type="text" name="method-step[]" placeholder="" class="border border-gray-300 p-2 rounded"></input>
+	<input type="text" name="method-step[]" placeholder="" class="border border-gray-200 p-3 rounded-lg w-full focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
 }
 
 templ AddRecipe() {
@@ -17,99 +17,108 @@ templ AddRecipe() {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Recipe Page</title>
+			<title>Add Recipe - Recipe Book</title>
 			<!-- Link to Tailwind CSS -->
 			<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet"/>
 		</head>
-		<body class="bg-gray-100">
+		<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
 			<div class="flex">
 				<!-- Sidebar -->
-				<div class="fixed w-1/6 bg-green-600 h-screen p-4 space-y-2 flex flex-col">
-					<a href="/" class="block text-white hover:bg-green-700 p-2 rounded">
-						<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<div class="fixed w-20 lg:w-64 bg-gradient-to-b from-green-600 to-green-700 h-screen p-4 shadow-xl flex flex-col">
+					<a href="/" class="group flex items-center space-x-3 text-white hover:bg-white/20 p-3 rounded-lg transition-all duration-200">
+						<svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
 						</svg>
+						<span class="hidden lg:block font-medium">Home</span>
 					</a>
 				</div>
 				<!-- Main content -->
-				<div class="flex-grow p-4 text-gray-700" style="margin-left: 16.666667%;">
-				<!-- TODO -->
-					<div class="container mx-auto bg-white p-6 rounded-lg shadow-md">
-					  <h1 class="text-2xl font-bold mb-6">Recipe Form</h1>
-					  <form class="space-y-4" method="post">
-						
+				<div class="flex-grow p-6 lg:p-8 ml-20 lg:ml-64">
+					<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+					  <h1 class="text-4xl font-bold mb-8 text-gray-900">Add New Recipe</h1>
+					  <form class="space-y-6" method="post">
+
 						<!-- Uid -->
-						<div class="flex flex-col">
-						  <label for="uid" class="font-semibold">Recipe Uid:</label>
-						  <input type="text" id="uid" name="uid" placeholder="Dash seperated uid all lowercase unique ID for your recipe" class="border border-gray-300 p-2 rounded"></input>
+						<div class="flex flex-col space-y-2">
+						  <label for="uid" class="font-semibold text-gray-900 text-sm">Recipe UID</label>
+						  <input type="text" id="uid" name="uid" placeholder="dash-separated-lowercase-unique-id" class="border border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
+						  <p class="text-xs text-gray-500">A unique identifier for your recipe (lowercase, dash-separated)</p>
 						</div>
 
 						<!-- Title -->
-						<div class="flex flex-col">
-						  <label for="title" class="font-semibold">Title:</label>
-						  <input type="text" id="title" name="title" placeholder="What do you call it?" class="border border-gray-300 p-2 rounded"></input>
+						<div class="flex flex-col space-y-2">
+						  <label for="title" class="font-semibold text-gray-900 text-sm">Recipe Title</label>
+						  <input type="text" id="title" name="title" placeholder="What do you call it?" class="border border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
 						</div>
 
-						<!-- Preparation Time -->
-						<div class="flex flex-col">
-						  <label for="prep-time" class="font-semibold">Preparation time:</label>
-						  <input type="text" id="prep-time" name="prep-time" placeholder="e.g. 10 mins" class="border border-gray-300 p-2 rounded"></input>
-						</div>
+						<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+							<!-- Preparation Time -->
+							<div class="flex flex-col space-y-2">
+							  <label for="prep-time" class="font-semibold text-gray-900 text-sm">Prep Time</label>
+							  <input type="text" id="prep-time" name="prep-time" placeholder="e.g. 10 mins" class="border border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
+							</div>
 
-						<!-- Cooking Time -->
-						<div class="flex flex-col">
-						  <label for="cook-time" class="font-semibold">Cooking time:</label>
-						  <input type="text" id="cook-time" name="cook-time" placeholder="e.g. 20 mins" class="border border-gray-300 p-2 rounded"></input>
-						</div>
+							<!-- Cooking Time -->
+							<div class="flex flex-col space-y-2">
+							  <label for="cook-time" class="font-semibold text-gray-900 text-sm">Cook Time</label>
+							  <input type="text" id="cook-time" name="cook-time" placeholder="e.g. 20 mins" class="border border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
+							</div>
 
-						<!-- Serves -->
-						<div class="flex flex-col">
-						  <label for="serves" class="font-semibold">Serves:</label>
-						  <input type="text" id="serves" name="serves" placeholder="e.g. 4" class="border border-gray-300 p-2 rounded"></input>
+							<!-- Serves -->
+							<div class="flex flex-col space-y-2">
+							  <label for="serves" class="font-semibold text-gray-900 text-sm">Serves</label>
+							  <input type="text" id="serves" name="serves" placeholder="e.g. 4" class="border border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
+							</div>
 						</div>
 
 						<!-- Source -->
-						<div class="flex flex-col">
-						  <label for="source" class="font-semibold">Source:</label>
-						  <input type="text" id="source" name="source" placeholder="A website or n/a" class="border border-gray-300 p-2 rounded"></input>
+						<div class="flex flex-col space-y-2">
+						  <label for="source" class="font-semibold text-gray-900 text-sm">Source</label>
+						  <input type="text" id="source" name="source" placeholder="URL or n/a" class="border border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></input>
 						</div>
 
 						<!-- Ingredients -->
-						<div>
-						  <h2 class="text-xl font-semibold mt-6 mb-2">Ingredients:</h2>
+						<div class="bg-gray-50 p-6 rounded-xl">
+						  <h2 class="text-2xl font-bold mb-4 text-gray-900">Ingredients</h2>
 						  <div class="flex flex-col space-y-2" id="ingredients-list">
 								@CompIngredient()
 						  </div>
-							<button type="button" class="text-blue-500 mt-2" 
-								  hx-get="add-recipe?component=ingredient" 
-								  hx-target="#ingredients-list" 
+							<button type="button" class="text-green-600 hover:text-green-700 font-medium mt-4 inline-flex items-center space-x-1"
+								  hx-get="add-recipe?component=ingredient"
+								  hx-target="#ingredients-list"
 								  hx-swap="beforeend">
-								+ Add another ingredient
+								<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+								</svg>
+								<span>Add another ingredient</span>
 							</button>
 						</div>
 
 						<!-- Method -->
-						<div>
-						  <h2 class="text-xl font-semibold mt-6 mb-2">Method:</h2>
-						  <div class="flex flex-col space-y-2" id="method-list">
+						<div class="bg-gray-50 p-6 rounded-xl">
+						  <h2 class="text-2xl font-bold mb-4 text-gray-900">Method</h2>
+						  <div class="flex flex-col space-y-3" id="method-list">
 							@CompMethod()
-						  </div>	
-							<button type="button" class="text-blue-500 mt-2" 
-								  hx-get="add-recipe?component=method" 
-								  hx-target="#method-list" 
+						  </div>
+							<button type="button" class="text-green-600 hover:text-green-700 font-medium mt-4 inline-flex items-center space-x-1"
+								  hx-get="add-recipe?component=method"
+								  hx-target="#method-list"
 								  hx-swap="beforeend">
-								+ Add another step 
+								<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+								</svg>
+								<span>Add another step</span>
 							</button>
 						</div>
 
 						<!-- Other Notes -->
-						<div class="flex flex-col mt-6">
-						  <label for="notes" class="font-semibold">Other notes:</label>
-						  <textarea id="notes" name="notes" placeholder="Any other info that's worth knowing" class="border border-gray-300 p-2 rounded"></textarea>
+						<div class="flex flex-col space-y-2">
+						  <label for="notes" class="font-semibold text-gray-900 text-sm">Other Notes</label>
+						  <textarea id="notes" name="notes" placeholder="Any other info that's worth knowing" class="border border-gray-200 p-3 rounded-lg min-h-32 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"></textarea>
 						</div>
 
 						<!-- Submit Button -->
-						<button type="submit" class="bg-blue-500 text-white p-2 rounded mt-6 hover:bg-blue-600" name="submit-recipe">Submit Recipe</button>
+						<button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold p-4 rounded-lg mt-8 transition-colors shadow-lg hover:shadow-xl" name="submit-recipe">Submit Recipe</button>
 					  </form>
 					</div>
 				</div>

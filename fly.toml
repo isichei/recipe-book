@@ -11,6 +11,9 @@ primary_region = 'lhr'
 [env]
   PORT = '8080'
 
+[processes]
+  app = "run-app --db data/recipes.db --static-path /data/static/ --enable-filesync"
+
 [http_service]
   internal_port = 8080
   force_https = true
@@ -19,10 +22,24 @@ primary_region = 'lhr'
   min_machines_running = 0
   processes = ['app']
 
+[[services]]
+  internal_port = 9000
+  protocol = "tcp"
+  processes = ["app"]
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[services.ports]]
+    port = 9000
+    handlers = ["tls"]
+
 [[vm]]
   size = 'shared-cpu-1x'
+  processes = ["app"]
 
-[mounts]
+[[mounts]]
   source = "data"
   destination = "/data"
   snapshot_retention = 1
+  processes = ["app"]

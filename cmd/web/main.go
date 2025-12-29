@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	filesyncer "github.com/isichei/file-syncer"
+	"github.com/isichei/recipe-book/internal/filesyncer"
 	"github.com/isichei/recipe-book/internal/database"
 	"log"
 	"log/slog"

@@ -8,6 +8,7 @@ tasks:
     cmds:
       - go test ./internal/recipes -v
       - go test ./internal/database -v
+      - go test ./internal/filesyncer -v
   
   build-cli:
     desc: Build the cli binary

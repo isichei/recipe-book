@@ -164,3 +164,57 @@ func sendAuthFail(conn net.Conn) {
 	authFail := Message{Type: MsgTypeAuthFail}
 	conn.Write(authFail.AsBytesBuf())
 }
+
+// Create a tcp listener that will loop through connections, authenticate each
+// one and if authenticated try to run the replica on that conn. If auth -> sync
+// errors then throw out the connection and continue listening to the next one.
+// Current implementation is only serial and expects only one sender (aka main) at 
+// once.
+func StartReplicaTCPFileServer(address, apiKey, directory string) error {
+	// TODO: Could probably use the DB here if I end up using it as a cache for search
+	fc, err := CreateFileCache(directory)
+	if err != nil {
+		return err
+	}
+
+	ln, err := net.Listen("tcp", address)
+	if err != nil {
+		return fmt.Errorf("failed to listen on %s: %w", address, err)
+	}
+	defer ln.Close()
+
+	slog.Info("TCP Listening for authenticated connection", "addr", address)
+
+	AcceptConnErrCounter := 0
+	for {
+		conn, err := ln.Accept()
+		if err != nil {
+			slog.Warn("Failed to accept connection", "error", err)
+			if AcceptConnErrCounter >= 5 {
+				return err
+			}
+			AcceptConnErrCounter += 1
+			continue
+		}
+		conn, err = AuthenticateListenerConnection(conn, apiKey)
+		if err != nil {
+			conn.Close()
+			continue
+		}
+		// TODO: Think I need to reset the fc after this call to refresh it
+		// I also might want to use a mutex here incase two syncs are called
+		// but the later will be me doing it twice so not that much of a problem right
+
+		// Now do the real work with the authenticated connection
+		syncer := Syncer{Replica: true, Conn: conn, FileCache: fc}
+
+		err = syncer.Run();
+
+		if err != nil {
+			slog.Error("StartReplicaTCPFileServer failed", "error", err)
+			continue
+		}
+
+		slog.Info("Replica sync complete")
+	}
+}

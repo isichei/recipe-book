@@ -77,6 +77,9 @@ func ParseMessage(msgStream []byte) (Message, error) {
 	}
 
 	split := bytes.SplitAfterN(msgStream[2:], []byte(","), 2)
+	if len(split) < 2 {
+		return msg, fmt.Errorf("malformed message: missing comma separator, got: %q", string(msgStream))
+	}
 	msg.FileName = string(split[0][:len(split[0])-1])
 
 	if !bytes.HasSuffix(split[1], []byte("\x00")) {

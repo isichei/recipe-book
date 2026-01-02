@@ -38,7 +38,13 @@ tasks:
     desc: Create a fresh db at recipes.db
     cmds:
       - rm -f recipes.db
-      - ./bin/cli create-db-from-files
+      - ./bin/cli db-migrate
+      - ./bin/cli db-add-recipes
+
+  db-migrate:
+    desc: Runs the db migration script
+    cmds:
+      - ./bin/cli db-migrate
 
   start-app:
     deps:

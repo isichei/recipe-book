@@ -67,7 +67,7 @@ func main() {
 	if *dbPath == "" && *recipeDir == "" {
 		log.Fatal("Both db and recipe-dir were set to empty strings need to specify one")
 	} else if *dbPath != "" {
-		db, err = database.NewSqlDatabase(*dbPath)
+		db, err = database.NewSqlDatabase(*dbPath, false)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -38,7 +38,7 @@ func TestSetCache(t *testing.T) {
 }
 
 func TestSqlDatabase(t *testing.T) {
-	db, err := NewSqlDatabase(":memory:")
+	db, err := NewSqlDatabase(":memory:", true)
 	if err != nil {
 		t.Errorf("No error should have occurred. Error: %s\n", err)
 	}

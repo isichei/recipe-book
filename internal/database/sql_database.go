@@ -2,13 +2,19 @@ package database
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
 	"log"
+	"path"
+	"sort"
 	"strings"
 
 	"github.com/isichei/recipe-book/internal/recipes"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+//go:embed migrations/*.sql
+var migrationFiles embed.FS
 
 type SqlDatabase struct {
 	dbEngine *sql.DB
@@ -110,12 +116,12 @@ func (db SqlDatabase) GetRecipe(recipeUid string) recipes.Recipe {
 
 	ingredients, err := db.getIngredients(recipeUid)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Recipe %s is missing ingredients or could not get ingredients from db - %s", recipeUid, err))
+		log.Fatalf("Recipe %s is missing ingredients or could not get ingredients from db - %s", recipeUid, err)
 	}
 
 	method, err := db.getMethod(recipeUid)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Recipe %s is missing method or could not get method from db - %s", recipeUid, err))
+		log.Fatalf("Recipe %s is missing method or could not get method from db - %s", recipeUid, err)
 	}
 
 	r := recipes.Recipe{
@@ -177,68 +183,6 @@ func (db SqlDatabase) getMethod(recipeUid string) ([]string, error) {
 	return method, nil
 }
 
-// Initialize connection and return the DB
-func NewSqlDatabase(dataSourceName string) (*SqlDatabase, error) {
-	// Open up the DB and init
-	db, err := sql.Open("sqlite3", dataSourceName)
-	if err != nil {
-		return nil, err
-	}
-	if err = db.Ping(); err != nil {
-		log.Fatal("Cannot connect to the DB")
-	}
-
-	// Create main recipe table
-	query := `CREATE TABLE IF NOT EXISTS recipes (
-	id TEXT PRIMARY KEY,
-	title TEXT NOT NULL,
-	description TEXT NOT NULL,
-	prep_time TEXT,
-	cooking_time TEXT,
-	serves TEXT,
-	other_notes TEXT,
-	source TEXT
-    );`
-	_, err = db.Exec(query)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Create the ingredients table
-	query = `CREATE TABLE IF NOT EXISTS ingredients (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	recipe_id TEXT,
-	name TEXT NOT NULL,
-	amount TEXT NULL,
-	FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
-    );`
-	_, err = db.Exec(query)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Create the methods table
-	query = `CREATE TABLE IF NOT EXISTS methods (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	recipe_id TEXT,
-	step TEXT NOT NULL,
-	FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
-    );`
-	_, err = db.Exec(query)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var count int
-	query = "SELECT count(*) as n from recipes"
-	err = db.QueryRow(query).Scan(&count)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Total number of recipes in %s: %d\n", dataSourceName, count)
-	return &SqlDatabase{dbEngine: db}, nil
-}
-
 // Close method to be deferred
 func (s *SqlDatabase) Close() error {
 	return s.dbEngine.Close()
@@ -258,7 +202,7 @@ func (db *SqlDatabase) AddRecipe(rUid string, r recipes.Recipe) error {
 
 	var rowsAffected int64
 	if rowsAffected, err = result.RowsAffected(); rowsAffected != 1 || err != nil {
-		log.Fatal(fmt.Sprintf("%d %s", rowsAffected, err))
+		log.Fatalf("%d %s", rowsAffected, err)
 	}
 
 	// Add ingredients
@@ -294,5 +238,71 @@ func (db *SqlDatabase) AddFiles(dir string) {
 		uid, fullRecipe := fileGetter.getRecipeFromFilePath(file)
 		fmt.Printf("File %s added...\n", file)
 		db.AddRecipe(uid, fullRecipe)
+	}
+}
+
+func CreateDbConnection(dataSourceName string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", dataSourceName)
+	if err != nil {
+		log.Println("Failed to open sqlite db")
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		log.Println("Cannot connect to the DB")
+		return nil, err
+	}
+	return db, nil
+}
+
+// Initialize connection and return the DB
+func NewSqlDatabase(dataSourceName string, runMigrations bool) (*SqlDatabase, error) {
+	// Open up the DB and init
+	db, err := CreateDbConnection(dataSourceName)
+	if err != nil {
+		return nil, err
+	}
+
+	if runMigrations {
+		RunDbMigrations(db)
+	}
+
+	var count int
+	query := "SELECT count(*) as n from recipes"
+	err = db.QueryRow(query).Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Total number of recipes in %s: %d\n", dataSourceName, count)
+	return &SqlDatabase{dbEngine: db}, nil
+}
+
+// A function to run the DB schema migrations on a DB connection
+// will exit(1) if errors at any point
+func RunDbMigrations(db *sql.DB) {
+
+	// Get all files and sort by name
+	entries, err := migrationFiles.ReadDir("migrations")
+	if err != nil {
+		log.Fatalf("Failed to read embeded migrations folder %s\n", err)
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Name() < entries[j].Name()
+	})
+
+	// Run migrations
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		log.Printf("Running '%s' migration...\n", entry.Name())
+		query, err := migrationFiles.ReadFile(path.Join("migrations", entry.Name()))
+		if err != nil {
+			log.Fatalf("Failed to read the migration file %s: %s\n", entry.Name(), err)
+		}
+
+		_, err = db.Exec(string(query))
+		if err != nil {
+			log.Fatalf("Failed to run migration %s: s\n", err)
+		}
 	}
 }

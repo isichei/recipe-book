@@ -26,10 +26,14 @@ func main() {
 	// Set log level to debug
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})))
 
-	// DB update command
-	dbUpdateCmd := flag.NewFlagSet("create-db-from-files", flag.ExitOnError)
-	dbFilePath := dbUpdateCmd.String("dbpath", "./recipes.db", "Path to the recipe sqlite database")
-	recipeFileDir := dbUpdateCmd.String("recipes", "static/recipe_mds/", "Directory to the recipe md files")
+	// DB creation command
+	dbCreateCmd := flag.NewFlagSet("db-add-recipes", flag.ExitOnError)
+	dbCreateDbPath := dbCreateCmd.String("dbpath", "./recipes.db", "Path to the recipe sqlite database")
+	DbCreateRecipeFileDir := dbCreateCmd.String("recipes", "static/recipe_mds/", "Directory to the recipe md files")
+
+	// Run DB migration
+	dbMigrateCmd := flag.NewFlagSet("db-migrate", flag.ExitOnError)
+	dbMigrateDbPath := dbMigrateCmd.String("dbpath", "./recipes.db", "Path to the recipe sqlite database")
 
 	// AWS download (sync) assets command
 	syncCmd := flag.NewFlagSet("sync-from-aws", flag.ExitOnError)
@@ -44,7 +48,7 @@ func main() {
 	replica := tcpCmd.Bool("replica", false, "Run this cmd as the replica")
 
 	// AWS upload all assets command
-	wrongSubCommandMsg := "expected the command 'create-db-from-files', 'start-tcp' or 'sync-from-aws'"
+	wrongSubCommandMsg := "expected the command 'db-add-recipes', 'db-migrate', 'start-tcp' or 'sync-from-aws'"
 
 	if len(os.Args) < 2 {
 		fmt.Println(wrongSubCommandMsg)
@@ -52,13 +56,20 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case "create-db-from-files":
-		dbUpdateCmd.Parse(acceptDoubleDashArgs(os.Args[2:]))
-		db, err := database.NewSqlDatabase(*dbFilePath)
+	case "db-add-recipes":
+		dbCreateCmd.Parse(acceptDoubleDashArgs(os.Args[2:]))
+		db, err := database.NewSqlDatabase(*dbCreateDbPath, true)
 		if err != nil {
 			log.Fatal(err)
 		}
-		db.AddFiles(*recipeFileDir)
+		db.AddFiles(*DbCreateRecipeFileDir)
+
+	case "db-migrate":
+		db, err := database.CreateDbConnection(*dbMigrateDbPath)
+		if err != nil {
+			log.Fatal("Failed to create db connection to %s: %s\n", *dbMigrateDbPath, err)
+		}
+		database.RunDbMigrations(db)
 
 	case "sync-from-aws":
 		syncCmd.Parse(acceptDoubleDashArgs(os.Args[2:]))

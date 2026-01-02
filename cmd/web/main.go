@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/isichei/recipe-book/internal/filesyncer"
 	"github.com/isichei/recipe-book/internal/database"
+	"github.com/isichei/recipe-book/internal/filesyncer"
 	"log"
 	"log/slog"
 	"net/http"
@@ -24,7 +24,6 @@ type application struct {
 	logger       *slog.Logger
 	enableWrite  bool
 }
-
 
 func main() {
 	defaultPort, portExists := os.LookupEnv("PORT")

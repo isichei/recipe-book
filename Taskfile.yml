@@ -3,6 +3,12 @@ version: '3'
 dotenv: ['.env']
 
 tasks:
+  fmt:
+    desc: Run go fmt on relevant files
+    cmds:
+      - go fmt ./internal/...
+      - go fmt ./cmd/...
+
   test:
     desc: Run the app tests
     cmds:

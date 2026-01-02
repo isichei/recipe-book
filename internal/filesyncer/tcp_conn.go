@@ -168,11 +168,11 @@ func sendAuthFail(conn net.Conn) {
 // Create a tcp listener that will loop through connections, authenticate each
 // one and if authenticated try to run the replica on that conn. If auth -> sync
 // errors then throw out the connection and continue listening to the next one.
-// Current implementation is only serial and expects only one sender (aka main) at 
+// Current implementation is only serial and expects only one sender (aka main) at
 // once.
 func StartReplicaTCPFileServer(address, apiKey, directory string) error {
 	// TODO: Could probably use the DB here if I end up using it as a cache for search
-	fc, err := CreateFileCache(directory)
+	fc, err := CreateRawMdFileCache(directory)
 	if err != nil {
 		return err
 	}
@@ -208,7 +208,7 @@ func StartReplicaTCPFileServer(address, apiKey, directory string) error {
 		// Now do the real work with the authenticated connection
 		syncer := Syncer{Replica: true, Conn: conn, FileCache: fc}
 
-		err = syncer.Run();
+		err = syncer.Run()
 
 		if err != nil {
 			slog.Error("StartReplicaTCPFileServer failed", "error", err)

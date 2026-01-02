@@ -42,11 +42,11 @@ func TestSyncerEndToEnd(t *testing.T) {
 	mainConn, replicaConn := net.Pipe()
 
 	// Run syncers
-	mainFC, err := CreateFileCache(mainDir)
+	mainFC, err := CreateRawMdFileCache(mainDir)
 	assert.Equal(t, nil, err, "Failed to create main file cache")
 	mainSyncer := Syncer{Replica: false, Conn: mainConn, FileCache: mainFC}
 
-	replicaFC, err := CreateFileCache(replicaDir)
+	replicaFC, err := CreateRawMdFileCache(replicaDir)
 	assert.Equal(t, nil, err, "Failed to create replica file cache")
 	replicaSyncer := Syncer{Replica: true, Conn: replicaConn, FileCache: replicaFC}
 
@@ -64,7 +64,7 @@ func TestSyncerEndToEnd(t *testing.T) {
 	}
 
 	// TODO: Assert folders match
-	replicaFcPostSync, err := CreateFileCache(replicaDir)
+	replicaFcPostSync, err := CreateRawMdFileCache(replicaDir)
 	assert.Equal(t, nil, err, "Failed to create replica file cache after sync")
 
 	mainFileCount := 0

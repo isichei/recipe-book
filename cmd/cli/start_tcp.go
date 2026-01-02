@@ -3,9 +3,9 @@ package main
 import (
 	"bufio"
 	"errors"
+	"github.com/isichei/recipe-book/internal/filesyncer"
 	"log"
 	"net"
-	"github.com/isichei/recipe-book/internal/filesyncer"
 )
 
 func startMainTCP(addr, apiKey, directory string, pingOnly, tls bool) {
@@ -17,7 +17,7 @@ func startMainTCP(addr, apiKey, directory string, pingOnly, tls bool) {
 	if pingOnly {
 		log.Println("Connection complete. Ping only so closing connection.")
 	} else {
-		fc, err := filesyncer.CreateFileCache(directory)
+		fc, err := filesyncer.CreateRawMdFileCache(directory)
 		if err != nil {
 			log.Fatalf("Failed to create the file cache: %s\n", err)
 		}

@@ -67,7 +67,7 @@ func main() {
 	case "db-migrate":
 		db, err := database.CreateDbConnection(*dbMigrateDbPath)
 		if err != nil {
-			log.Fatal("Failed to create db connection to %s: %s\n", *dbMigrateDbPath, err)
+			log.Fatalf("Failed to create db connection to %s: %s\n", *dbMigrateDbPath, err)
 		}
 		database.RunDbMigrations(db)
 

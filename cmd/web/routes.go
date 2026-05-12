@@ -4,6 +4,8 @@ import (
 	"net/http"
 )
 
+const ENABLE_AUTH = false
+
 func (app *application) routes() http.Handler {
 
 	mux := http.NewServeMux()
@@ -21,5 +23,9 @@ func (app *application) routes() http.Handler {
 	mux.Handle("GET /static/", staticFileServer(app.staticFolder))
 
 	// All requests
-	return logRequest(basicAuth(mux, app.creds), app.logger)
+	if ENABLE_AUTH {
+		return logRequest(basicAuth(mux, app.creds), app.logger)
+	} else {
+		return logRequest(mux, app.logger)
+	}
 }

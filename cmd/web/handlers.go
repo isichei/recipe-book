@@ -107,7 +107,7 @@ func addRecipe(db database.RecipeDatabase) http.Handler {
 			}
 			err = db.AddRecipe(recipeUid, recipe)
 			if err == nil {
-				fmt.Printf("Recipe %s added\n")
+				fmt.Printf("Recipe %s added\n", recipeUid)
 			} else {
 				fmt.Printf("Recipe %s errored: %s\n", recipeUid, err)
 			}

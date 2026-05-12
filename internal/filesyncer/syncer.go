@@ -8,14 +8,13 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"os"
-	"path"
 )
 
 type Syncer struct {
-	Replica   bool
-	Conn      io.ReadWriteCloser
-	FileCache FileCache
+	Replica          bool
+	Conn             io.ReadWriteCloser
+	FileCache        FileCache
+	RecipeReadWriter RecipeReadWriter
 }
 
 func (s *Syncer) SendMessage(msg Message) error {
@@ -170,13 +169,11 @@ OUTER:
 	// remove all un-recieved files from the cache (aka not synced)
 	for k, v := range s.FileCache.All() {
 		if !v.synced {
-			fileToDelete := path.Join(s.FileCache.GetDirectory(), k)
-			err := os.Remove(fileToDelete)
+			err := s.RecipeReadWriter.Delete(k)
 			if err != nil {
-				slog.Error("Replica could not delete file", "filename", k, "path", fileToDelete, "error", err)
-				return fmt.Errorf("Replica failed to delete file %s: %w", fileToDelete, err)
+				return err
 			} else {
-				slog.Debug("Replica deleting file", "filename", k)
+				slog.Debug("Replica deleting", "filename", k)
 			}
 		}
 	}
@@ -187,7 +184,7 @@ OUTER:
 func (s *Syncer) SendFile(filename string) error {
 	var err error
 	msg := Message{Type: MsgTypeData, FileName: filename}
-	msg.Data, err = os.ReadFile(path.Join(s.FileCache.GetDirectory(), filename))
+	msg.Data, err = s.RecipeReadWriter.Read(filename)
 	if err != nil {
 		return errors.Join(err, fmt.Errorf("Could not read file %s", filename))
 	}
@@ -214,10 +211,6 @@ func (s *Syncer) WriteFile(msg Message) error {
 		slog.Error("Data message has no data", "filename", msg.FileName)
 		return fmt.Errorf("data message has no data for file %s", msg.FileName)
 	}
-
-	err := os.WriteFile(path.Join(s.FileCache.GetDirectory(), msg.FileName), msg.Data, 0644)
-	if err != nil {
-		return errors.Join(fmt.Errorf("failed to write %s from msg", msg.FileName), err)
-	}
-	return nil
+	err := s.RecipeReadWriter.Write(msg.FileName, msg.Data)
+	return err
 }

@@ -22,11 +22,12 @@ type fileCacheData struct {
 	synced bool
 }
 
+
 type FileCache interface {
-	All() iter.Seq2[string, fileCacheData] // string is filename
-	GetDirectory() string                  // TODO: See if can get rid
-	Get(string) (fileCacheData, bool)      // bool is exists
-	Add(string, fileCacheData)             // string is filename
+	All() iter.Seq2[string, fileCacheData] // string is filename - Get all FileCacheData from the FileCache
+	GetDirectory() string                  // TODO: See if can get rid - ...
+	Get(string) (fileCacheData, bool)      // bool is exists - Get the FileCacheData basedo on the filename as str input
+	Add(string, fileCacheData)             // string is filename - Add teh FileCacheData to the cache with its filename as key
 }
 
 type RawMdFileCache struct {

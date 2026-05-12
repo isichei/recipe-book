@@ -231,6 +231,39 @@ func (db *SqlDatabase) AddRecipe(rUid string, r recipes.Recipe) error {
 	return nil
 }
 
+func (db *SqlDatabase) DeleteRecipe(recipeUid string) error {
+	// Delete method steps first
+	query := `DELETE FROM methods WHERE recipe_id = ?;`
+	_, err := db.dbEngine.Exec(query, recipeUid)
+	if err != nil {
+		log.Printf("Error deleting methods for recipe %s: %v", recipeUid, err)
+		return err
+	}
+
+	// Delete ingredients
+	query = `DELETE FROM ingredients WHERE recipe_id = ?;`
+	_, err = db.dbEngine.Exec(query, recipeUid)
+	if err != nil {
+		log.Printf("Error deleting ingredients for recipe %s: %v", recipeUid, err)
+		return err
+	}
+
+	// Delete the recipe itself
+	query = `DELETE FROM recipes WHERE id = ?;`
+	result, err := db.dbEngine.Exec(query, recipeUid)
+	if err != nil {
+		log.Printf("Error deleting recipe %s: %v", recipeUid, err)
+		return err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("recipe %s not found", recipeUid)
+	}
+
+	return nil
+}
+
 func (db *SqlDatabase) AddFiles(dir string) {
 	fileGetter := LocalMarkdownFileGetter{dir}
 

@@ -93,3 +93,50 @@ func (db InMemDatabase) GetRecipe(recipeUid string) recipes.Recipe {
 func (db InMemDatabase) AddRecipe(recipeUid string, r recipes.Recipe) error {
 	return errors.New("Not implemented")
 }
+
+func (db InMemDatabase) DeleteRecipe(recipeUid string) error {
+	// Check if recipe exists
+	_, exists := db.data[recipeUid]
+	if !exists {
+		return fmt.Errorf("recipe %s not found", recipeUid)
+	}
+
+	// Delete from data map
+	delete(db.data, recipeUid)
+
+	// Clean up search cache - remove the recipeUid from all search terms
+	for term, uidSet := range db.sc {
+		delete(uidSet, recipeUid)
+		// If the set is now empty, remove the term entirely
+		if len(uidSet) == 0 {
+			delete(db.sc, term)
+		}
+	}
+
+	// Also need to remove search terms associated with this recipe
+	// Get the full recipe to find all its search terms
+	fullRecipe := db.fileGetter.getRecipe(recipeUid)
+	
+	// Remove title search terms
+	for _, word := range strings.Split(strings.ToLower(fullRecipe.Title), " ") {
+		if uidSet, exists := db.sc[word]; exists {
+			delete(uidSet, recipeUid)
+			if len(uidSet) == 0 {
+				delete(db.sc, word)
+			}
+		}
+	}
+
+	// Remove ingredient search terms
+	for _, ingredient := range fullRecipe.Ingredients {
+		term := strings.ToLower(ingredient.Name)
+		if uidSet, exists := db.sc[term]; exists {
+			delete(uidSet, recipeUid)
+			if len(uidSet) == 0 {
+				delete(db.sc, term)
+			}
+		}
+	}
+
+	return nil
+}

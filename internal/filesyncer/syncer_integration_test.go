@@ -44,11 +44,11 @@ func TestSyncerEndToEnd(t *testing.T) {
 	// Run syncers
 	mainFC, err := CreateRawMdFileCache(mainDir)
 	assert.Equal(t, nil, err, "Failed to create main file cache")
-	mainSyncer := Syncer{Replica: false, Conn: mainConn, FileCache: mainFC}
+	mainSyncer := Syncer{Replica: false, Conn: mainConn, FileCache: mainFC, RecipeReadWriter: &RawMdRecipeReadWriter{directory: mainDir}}
 
 	replicaFC, err := CreateRawMdFileCache(replicaDir)
 	assert.Equal(t, nil, err, "Failed to create replica file cache")
-	replicaSyncer := Syncer{Replica: true, Conn: replicaConn, FileCache: replicaFC}
+	replicaSyncer := Syncer{Replica: true, Conn: replicaConn, FileCache: replicaFC, RecipeReadWriter: &RawMdRecipeReadWriter{directory: replicaDir}}
 
 	g := new(errgroup.Group)
 	g.Go(func() error {

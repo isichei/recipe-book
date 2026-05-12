@@ -61,7 +61,7 @@ tasks:
   make-templates:
     desc: Regenerate all the HTML templates
     cmds:
-      - "{{if .TEMPL_EXEC}}{{.TEMPL_EXEC}}{{else}}templ{{end}} generate"
+      - go tool templ generate
 
   download-static-assets:
     desc: Downloads static assets from the aws bucket to the local static folder

@@ -9,6 +9,7 @@ type RecipeDatabase interface {
 	GetRecipeMetadata(recipeId string) recipes.RecipeMetadata
 	GetRecipe(recipeUid string) recipes.Recipe
 	AddRecipe(rUid string, r recipes.Recipe) error
+	DeleteRecipe(recipeUid string) error
 }
 type Set map[string]bool
 

@@ -66,23 +66,43 @@ tasks:
   download-static-assets:
     desc: Downloads static assets from the aws bucket to the local static folder
     cmds:
-      - echo $AWS_REGION
-      - bin/cli sync-from-aws --bucket {{.BUCKET}}
-    requires:
-      vars: ["BUCKET"]
+      - echo "THIS IS DEPRECATED"
+      # - echo $AWS_REGION
+      # - bin/cli sync-from-aws --bucket {{.BUCKET}}
+    # requires:
+    #   vars: ["BUCKET"]
 
   download-assests:
     desc: Downloads all the markdown files and images for the recipes to S3
     cmds:
-      - aws s3 cp s3://{{.BUCKET}}/ui/static/img ui/static/img --recursive
-      - aws s3 cp s3://{{.BUCKET}}/static/recipe_mds static/recipe_mds --recursive
-    requires:
-      vars: ["BUCKET"]
+      - echo "THIS IS DEPRECATED"
+      # - aws s3 cp s3://{{.BUCKET}}/ui/static/img ui/static/img --recursive
+      # - aws s3 cp s3://{{.BUCKET}}/static/recipe_mds static/recipe_mds --recursive
+    # requires:
+    #   vars: ["BUCKET"]
 
   upload-assests:
     desc: Uploads all the markdown files and images for the recipes from S3
     cmds:
-      - aws s3 cp ui/static/img s3://{{.BUCKET}}/ui/static/img --recursive
-      - aws s3 cp static/recipe_mds s3://{{.BUCKET}}/static/recipe_mds --recursive
+      - echo "THIS IS DEPRECATED"
+    #   - aws s3 cp ui/static/img s3://{{.BUCKET}}/ui/static/img --recursive
+    #   - aws s3 cp static/recipe_mds s3://{{.BUCKET}}/static/recipe_mds --recursive
+    # requires:
+    #   vars: ["BUCKET"]
+
+  sync-image:
+    desc: Sync a single image to the fly VM
+    cmds:
+      - fly ssh sftp put -a recipe-book-go-htmx static/img/{{.FILENAME}} /data/static/img/{{.FILENAME}}
     requires:
-      vars: ["BUCKET"]
+      vars: ["FILENAME"]
+
+  sync-recipes-over-tcp:
+    desc: Sync all local files to the app over the custom TCP protocol
+    cmds:
+      - bin/cli start-tcp --address recipe-book-go-htmx.fly.dev:9000 --directory ./static/recipe_mds/
+
+  ping-app-tcp:
+    desc: Ping the fly apps TCP connection to check it's accepting connections
+    cmds:
+      - bin/cli start-tcp --address recipe-book-go-htmx.fly.dev:9000 --directory ./static/recipe_mds/ --ping-only

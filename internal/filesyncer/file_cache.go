@@ -139,7 +139,7 @@ func CreateRawMdFileCache(directory string) (*RawMdFileCache, error) {
 	}
 
 	for _, entry := range c {
-		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".md") {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".md") || strings.HasSuffix(entry.Name(), "template.md") {
 			continue
 		}
 

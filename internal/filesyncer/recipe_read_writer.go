@@ -24,6 +24,10 @@ type RawMdRecipeReadWriter struct {
 	directory string
 }
 
+func NewRawMdRecipeReadWriter(directory string) *RawMdRecipeReadWriter {
+	return &RawMdRecipeReadWriter{directory: directory}
+}
+
 func (rrw *RawMdRecipeReadWriter) Write(filename string, data []byte) error {
 	err := os.WriteFile(path.Join(rrw.directory, filename), data, 0644)
 	if err != nil {

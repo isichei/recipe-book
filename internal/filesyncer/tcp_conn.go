@@ -4,12 +4,15 @@ import (
 	"bufio"
 	"crypto/subtle"
 	"crypto/tls"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
 	"net"
 	"syscall"
 	"time"
+
+	"github.com/isichei/recipe-book/internal/database"
 )
 
 var ErrAuthFailed = errors.New("Authentication failed")
@@ -170,12 +173,21 @@ func sendAuthFail(conn net.Conn) {
 // errors then throw out the connection and continue listening to the next one.
 // Current implementation is only serial and expects only one sender (aka main) at
 // once.
-func StartReplicaTCPFileServer(address, apiKey, directory string) error {
-	// TODO: Could probably use the DB here if I end up using it as a cache for search
-	fc, err := CreateRawMdFileCache(directory)
-	if err != nil {
-		return err
+type sqlEngineProvider interface {
+	GetEngine() *sql.DB
+}
+
+func StartReplicaTCPFileServer(address, apiKey string, db database.RecipeDatabase) error {
+	sqlDb, ok := db.(sqlEngineProvider)
+	if !ok {
+		return errors.New("file sync requires a SQL database backend")
 	}
+
+	engine := sqlDb.GetEngine()
+	fc := DbFileCache{dbEngine: engine}
+
+	// Create the db file writer
+	dbReadWriter := DbRecipeReadWriter{db: db}
 
 	ln, err := net.Listen("tcp", address)
 	if err != nil {
@@ -206,9 +218,9 @@ func StartReplicaTCPFileServer(address, apiKey, directory string) error {
 		// but the later will be me doing it twice so not that much of a problem right
 
 		// Now do the real work with the authenticated connection
-		syncer := Syncer{Replica: true, Conn: conn, FileCache: fc}
+		syncer := Syncer{Replica: true, Conn: conn, FileCache: &fc, RecipeReadWriter: &dbReadWriter}
 
-		err = syncer.Run()
+		err = syncer.RunAsReplica()
 
 		if err != nil {
 			slog.Error("StartReplicaTCPFileServer failed", "error", err)

@@ -20,4 +20,4 @@ RUN apt update && apt install -y ca-certificates
 COPY --from=builder /run-app /usr/local/bin/
 COPY --from=builder /custom-tools /usr/local/bin/
 
-CMD ["run-app", "--db", "data/recipes.db", "--static-path", "/data/static/"] 
+CMD ["run-app", "--db", "data/recipes.db", "--static-path", "/data/static/", "--enable-filesync"] 

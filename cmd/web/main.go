@@ -9,7 +9,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"path"
 )
 
 type creds struct {
@@ -79,8 +78,11 @@ func main() {
 
 	if *enableFileSync {
 		app.logger.Info("Starting TCP File Sync on 9000")
+		if db == nil {
+			log.Fatal("Enable FileSync only now supports db backend on reciever")
+		}
 		go func() {
-			if err := filesyncer.StartReplicaTCPFileServer("0.0.0.0:9000", apiKey, path.Join(*staticPath, "recipe_mds")); err != nil {
+			if err := filesyncer.StartReplicaTCPFileServer("0.0.0.0:9000", apiKey, db); err != nil {
 				log.Printf("TCP File Server failed: %v", err)
 			}
 		}()

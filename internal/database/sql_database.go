@@ -1,13 +1,17 @@
 package database
 
 import (
+	"crypto/md5"
 	"database/sql"
 	"embed"
+	"encoding/hex"
 	"fmt"
 	"log"
+	"os"
 	"path"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/isichei/recipe-book/internal/recipes"
 	_ "github.com/mattn/go-sqlite3"
@@ -17,7 +21,7 @@ import (
 var migrationFiles embed.FS
 
 type SqlDatabase struct {
-	dbEngine *sql.DB
+	DbEngine *sql.DB
 }
 
 // Search the SQL lite DB for matching terms in the given text
@@ -38,7 +42,7 @@ func (db SqlDatabase) SearchRecipes(text string) []recipes.RecipeMetadata {
 
 	for i, searchTerm := range searchTerms {
 		likeSearch = "%" + searchTerm + "%"
-		rows, err := db.dbEngine.Query(query, likeSearch, likeSearch)
+		rows, err := db.DbEngine.Query(query, likeSearch, likeSearch)
 		if err != nil {
 			fmt.Println(err)
 			log.Fatal(err)
@@ -68,7 +72,7 @@ func (db SqlDatabase) getSomeRecipes(n int) []recipes.RecipeMetadata {
 	FROM recipes
 	limit ?;
 	`
-	rows, err := db.dbEngine.Query(query, n)
+	rows, err := db.DbEngine.Query(query, n)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -89,7 +93,7 @@ func (db SqlDatabase) GetRecipeMetadata(recipeUid string) recipes.RecipeMetadata
 	WHERE id = ?;
 	`
 
-	err := db.dbEngine.QueryRow(query, recipeUid).Scan(&title, &desc)
+	err := db.DbEngine.QueryRow(query, recipeUid).Scan(&title, &desc)
 	if err != nil {
 		log.Printf("%s. No recipe data found for %s\n", err, recipeUid)
 		return recipes.RecipeMetadata{}
@@ -105,7 +109,7 @@ func (db SqlDatabase) GetRecipe(recipeUid string) recipes.Recipe {
 	FROM recipes
 	WHERE id = ?;
 	`
-	err := db.dbEngine.QueryRow(query, recipeUid).Scan(&title, &description, &prepTime, &cookingTime, &serves, &otherNotes, &source)
+	err := db.DbEngine.QueryRow(query, recipeUid).Scan(&title, &description, &prepTime, &cookingTime, &serves, &otherNotes, &source)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			log.Printf("No recipe data found for %s\n", recipeUid)
@@ -149,7 +153,7 @@ func (db SqlDatabase) getIngredients(recipeUid string) ([]recipes.Ingredient, er
 	WHERE recipe_id = ?
 	ORDER by id;
 	`
-	rows, err := db.dbEngine.Query(query, recipeUid)
+	rows, err := db.DbEngine.Query(query, recipeUid)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +175,7 @@ func (db SqlDatabase) getMethod(recipeUid string) ([]string, error) {
 	WHERE recipe_id = ?
 	ORDER by id;
 	`
-	rows, err := db.dbEngine.Query(query, recipeUid)
+	rows, err := db.DbEngine.Query(query, recipeUid)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +189,11 @@ func (db SqlDatabase) getMethod(recipeUid string) ([]string, error) {
 
 // Close method to be deferred
 func (s *SqlDatabase) Close() error {
-	return s.dbEngine.Close()
+	return s.DbEngine.Close()
+}
+
+func (db *SqlDatabase) GetEngine() *sql.DB {
+	return db.DbEngine
 }
 
 // Write data to the SQL database
@@ -194,7 +202,7 @@ func (db *SqlDatabase) AddRecipe(rUid string, r recipes.Recipe) error {
 	INSERT INTO recipes (id, title, description, prep_time, cooking_time, serves, other_notes, source)
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 	`
-	result, err := db.dbEngine.Exec(query, rUid, r.Title, r.Description, r.PrepTime, r.CookingTime, r.Serves, r.OtherNotes, r.Source)
+	result, err := db.DbEngine.Exec(query, rUid, r.Title, r.Description, r.PrepTime, r.CookingTime, r.Serves, r.OtherNotes, r.Source)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -210,7 +218,7 @@ func (db *SqlDatabase) AddRecipe(rUid string, r recipes.Recipe) error {
 	VALUES (?, ?, ?);
 	`
 	for _, ingredient := range r.Ingredients {
-		_, err := db.dbEngine.Exec(query, rUid, ingredient.Name, ingredient.Amount)
+		_, err := db.DbEngine.Exec(query, rUid, ingredient.Name, ingredient.Amount)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -222,7 +230,7 @@ func (db *SqlDatabase) AddRecipe(rUid string, r recipes.Recipe) error {
 	VALUES (?, ?);
 	`
 	for _, step := range r.Method {
-		_, err := db.dbEngine.Exec(query, rUid, step)
+		_, err := db.DbEngine.Exec(query, rUid, step)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -234,7 +242,7 @@ func (db *SqlDatabase) AddRecipe(rUid string, r recipes.Recipe) error {
 func (db *SqlDatabase) DeleteRecipe(recipeUid string) error {
 	// Delete method steps first
 	query := `DELETE FROM methods WHERE recipe_id = ?;`
-	_, err := db.dbEngine.Exec(query, recipeUid)
+	_, err := db.DbEngine.Exec(query, recipeUid)
 	if err != nil {
 		log.Printf("Error deleting methods for recipe %s: %v", recipeUid, err)
 		return err
@@ -242,7 +250,7 @@ func (db *SqlDatabase) DeleteRecipe(recipeUid string) error {
 
 	// Delete ingredients
 	query = `DELETE FROM ingredients WHERE recipe_id = ?;`
-	_, err = db.dbEngine.Exec(query, recipeUid)
+	_, err = db.DbEngine.Exec(query, recipeUid)
 	if err != nil {
 		log.Printf("Error deleting ingredients for recipe %s: %v", recipeUid, err)
 		return err
@@ -250,7 +258,7 @@ func (db *SqlDatabase) DeleteRecipe(recipeUid string) error {
 
 	// Delete the recipe itself
 	query = `DELETE FROM recipes WHERE id = ?;`
-	result, err := db.dbEngine.Exec(query, recipeUid)
+	result, err := db.DbEngine.Exec(query, recipeUid)
 	if err != nil {
 		log.Printf("Error deleting recipe %s: %v", recipeUid, err)
 		return err
@@ -271,6 +279,29 @@ func (db *SqlDatabase) AddFiles(dir string) {
 		uid, fullRecipe := fileGetter.getRecipeFromFilePath(file)
 		fmt.Printf("File %s added...\n", file)
 		db.AddRecipe(uid, fullRecipe)
+
+		data, err := os.ReadFile(file)
+		if err != nil {
+			log.Printf("Error reading file %s for md5: %v", file, err)
+			continue
+		}
+		h := md5.New()
+		h.Write(data)
+		hash := hex.EncodeToString(h.Sum(nil))
+
+		query := `INSERT INTO file_cache (id, md5, deleted, last_edited, synced)
+		VALUES (?, ?, ?, ?, ?)
+		ON CONFLICT(id) DO UPDATE SET
+			md5 = excluded.md5,
+			deleted = excluded.deleted,
+			last_edited = excluded.last_edited,
+			synced = excluded.synced;
+		`
+		current_time := time.Now().UTC().Format(time.DateTime)
+		_, err = db.DbEngine.Exec(query, uid+".md", hash, 0, current_time, 1)
+		if err != nil {
+			log.Printf("Error inserting file_cache for %s: %v", file, err)
+		}
 	}
 }
 
@@ -306,7 +337,7 @@ func NewSqlDatabase(dataSourceName string, runMigrations bool) (*SqlDatabase, er
 		log.Fatal(err)
 	}
 	fmt.Printf("Total number of recipes in %s: %d\n", dataSourceName, count)
-	return &SqlDatabase{dbEngine: db}, nil
+	return &SqlDatabase{DbEngine: db}, nil
 }
 
 // A function to run the DB schema migrations on a DB connection

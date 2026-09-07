@@ -14,6 +14,8 @@ To run locally:
 task run-app 
 ```
 
+> Note: AWS functionality still exists but now we just sync data via the custom TCP connector and/or the fly ssh connection for images
+
 ## Uploading assets to Fly.io
 
 > **Prerequisites**

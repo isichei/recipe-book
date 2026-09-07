@@ -21,8 +21,8 @@ func startMainTCP(addr, apiKey, directory string, pingOnly, tls bool) {
 		if err != nil {
 			log.Fatalf("Failed to create the file cache: %s\n", err)
 		}
-		mainSyncer := filesyncer.Syncer{Replica: false, Conn: conn, FileCache: fc}
-		err = mainSyncer.Run()
+		mainSyncer := filesyncer.Syncer{Replica: false, Conn: conn, FileCache: fc, RecipeReadWriter: filesyncer.NewRawMdRecipeReadWriter(directory)}
+		err = mainSyncer.RunAsMain()
 		if err != nil {
 			log.Fatalf("Main syncer failed: %s\n", err)
 		}

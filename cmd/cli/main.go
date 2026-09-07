@@ -43,7 +43,7 @@ func main() {
 	// Start TCP connection with fly app
 	tcpCmd := flag.NewFlagSet("start-tcp", flag.ExitOnError)
 	tcpAddress := tcpCmd.String("address", "", "Address to connect the sender to")
-	directoryToSync := tcpCmd.String("directory", "", "Directory to sync md files to")
+	directoryToSync := tcpCmd.String("directory", "", "Sync location. Can be a directory if main or path to a sqlite db file if replica")
 	pingOnly := tcpCmd.Bool("ping-only", false, "Only send the authenticatation check to the server to check it's recieving")
 	replica := tcpCmd.Bool("replica", false, "Run this cmd as the replica")
 
@@ -84,9 +84,19 @@ func main() {
 		if !apiKeyExists {
 			log.Fatal("No TCP_API_KEY set as an env")
 		}
+
 		if *replica {
+			if !strings.HasSuffix(*directoryToSync, ".db") {
+				log.Fatalf("Replica mode only allowed for db sqlite backend. Expected directoryToSync to be path to db file got %s", *directoryToSync)	
+			}
+
+			db, err := database.NewSqlDatabase(*directoryToSync, false)
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			log.Println("Running replica tcp file server")
-			err := filesyncer.StartReplicaTCPFileServer(*tcpAddress, apiKey, *directoryToSync)
+			err = filesyncer.StartReplicaTCPFileServer(*tcpAddress, apiKey, db)
 			if err != nil {
 				log.Fatalf("Failed to run the replica server: %s\n", err)
 			}
